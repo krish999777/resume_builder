@@ -11,3 +11,75 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum Role{
+  candidate
+  recruiter
+}
+
+model User{
+  id Int @id @default(autoincrement())
+  name String
+  email String @unique
+  password String
+  role Role
+  resume Resume?
+  @@map("users")
+}
+model Education{
+  id Int @id @default(autoincrement())
+  resumeId Int
+  resume Resume @relation(fields: [resumeId], references: [id])
+  institution String
+  degree String?
+  duration Int
+  StartDate DateTime
+  EndData DateTime?
+  @@map("education")
+}
+
+model Experience{
+  id Int @id @default(autoincrement())
+  resumeId Int
+  resume Resume @relation(fields: [resumeId], references: [id])
+  company String
+  role String
+  startDate DateTime
+  endDate DateTime?
+  @@map("experience")
+}
+
+model Project{
+  id Int @id @default(autoincrement())
+  resumeId Int
+  resume Resume @relation(fields: [resumeId], references: [id])
+  name String
+  description String
+  sourceCode String?
+  DeployedLink String?
+  @@map("projects")
+}
+model Achievement{
+  id Int @id @default(autoincrement())
+  resumeId Int
+  resume Resume @relation(fields: [resumeId], references: [id])
+  name String
+  description String
+  @@map("achievements")
+}
+
+model Resume{
+  id Int @id @default(autoincrement())
+  userId Int @unique 
+  user User @relation(fields:[userId], references: [id])
+  title String
+  summary String 
+  skills String[]
+  education Education[]
+  experience Experience[]
+  projects Project[]
+  achievements Achievement[]
+  linkedin String?
+  visibility Boolean @default(true)
+  @@map("resumes")
+}
