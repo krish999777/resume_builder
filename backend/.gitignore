@@ -3,3 +3,26 @@ node_modules
 .env
 
 /generated/prisma
+dist
+# 1. Ignore specific system files
+.DS_Store
+Thumbs.db
+
+# 2. Ignore entire folders (add trailing slash)
+dist/
+build/
+.cache/
+
+# 3. Ignore all files matching an extension
+*.log
+*.tmp
+
+# 4. Ignore specific environment files containing sensitive API keys
+.env.local
+
+# 5. Make an exception (Do not ignore this specific file)
+!important_debug.log
+
+# 6. Ignore IDE-specific project configurations
+.vscode/
+.idea/
