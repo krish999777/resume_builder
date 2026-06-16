@@ -32,9 +32,8 @@ model Education{
   resume Resume @relation(fields: [resumeId], references: [id])
   institution String
   degree String?
-  duration Int
   StartDate DateTime
-  EndData DateTime?
+  EndDate DateTime?
   @@map("education")
 }
 
