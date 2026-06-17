@@ -50,3 +50,11 @@ export async function loginController(req:Request,res:Response){
         return res.status(500).json({error:"Internal server error"})
     }
 }
+export async function logoutController(req:Request,res:Response){
+    res.clearCookie('token',{
+        secure:true,
+        httpOnly:true,
+        sameSite:'none'
+    })
+    return res.status(200).json({message:'Logout successful'})
+}
