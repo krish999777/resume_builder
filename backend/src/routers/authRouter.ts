@@ -1,6 +1,6 @@
 import express from 'express'
 import {signupController} from '../controllers/signupController'
-import {loginController,logoutController} from '../controllers/loginController'
+import {loginController,logoutController,meController} from '../controllers/loginController'
 import {isAuthenticated} from '../middlewares/isAuthenticated'
 
 const router=express.Router()
@@ -8,5 +8,6 @@ const router=express.Router()
 router.post('/signup',signupController)
 router.post('/login',loginController)
 router.post('/logout',isAuthenticated,logoutController)
+router.get('/me',isAuthenticated,meController)
 
 export default router

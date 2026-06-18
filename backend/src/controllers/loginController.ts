@@ -58,3 +58,6 @@ export async function logoutController(req:Request,res:Response){
     })
     return res.status(200).json({message:'Logout successful'})
 }
+export async function meController(req:Request,res:Response){
+    return res.status(200).json({id:req.id,role:req.role})
+}
