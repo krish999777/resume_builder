@@ -107,3 +107,40 @@ export async function createResumeController(req:Request,res:Response){
         return res.status(500).json({error:"Internal server error"})
     }
 }
+
+export async function getResumeController(req:Request,res:Response){
+    try{
+
+        const id=req.id
+        const role=req.role
+        if(role==='recruiter'){
+            const resumes=await prisma.resume.findMany({
+                where:{visibility:true}
+            })
+            return res.status(200).json({
+                message:resumes.length===0?'No resumes found':'Fetch successful',
+                data:resumes
+            })
+        }else{
+            const resume=await prisma.resume.findUnique({
+                where:{userId:id},
+                include:{
+                    achievements:true,
+                    projects:true,
+                    experience:true,
+                    education:true
+                }
+            })
+            if(!resume){
+                return res.status(404).json({error:"Resume not found, please create a resume first"})
+            }
+            return res.status(200).json({
+                message:"Resume found",
+                data:resume
+            })
+        }
+    }catch(err){
+        console.log(err)
+        return res.status(500).json({error:"Internal server error"})
+    }
+}
