@@ -144,3 +144,32 @@ export async function getResumeController(req:Request,res:Response){
         return res.status(500).json({error:"Internal server error"})
     }
 }
+
+export async function getEachResumeController(req:Request,res:Response){
+    const {userId}=req.params
+    const IdScehma=z.coerce.number()
+    const result=IdScehma.safeParse(userId)
+    if(!result.success){
+        return res.status(400).json({error:"id must be number"})
+    }
+    try{
+        const resume=await prisma.resume.findFirst({
+            where:{
+                userId:result.data,
+                visibility:true
+            },
+            include:{
+                achievements:true,
+                projects:true,
+                experience:true,
+                education:true
+            }
+        })
+        if(!resume){
+            return res.status(404).json({error:"No resume found for user with this id"})
+        }
+        return res.status(200).json({message:"Resume found",data:resume})
+    }catch(err){
+        return res.status(500).json({error:"Internal server error"})
+    }
+}
