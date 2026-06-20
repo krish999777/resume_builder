@@ -196,10 +196,10 @@ const EditResumeSchema=ResumeSchema.safeExtend({
     })).default([])
 })
 
-type EducationType=z.infer<typeof EducationSchema>
-type ExperienceType=z.infer<typeof ExperienceSchema>
-type ProjectType=z.infer<typeof ProjectSchema>
-type AchievementType=z.infer<typeof AchievementSchema>
+// type EducationType=z.infer<typeof EducationSchema>
+// type ExperienceType=z.infer<typeof ExperienceSchema>
+// type ProjectType=z.infer<typeof ProjectSchema>
+// type AchievementType=z.infer<typeof AchievementSchema>
 
 export async function putResumeController(req:Request,res:Response){
     const id=req.id
@@ -213,6 +213,7 @@ export async function putResumeController(req:Request,res:Response){
         const userResume=await prisma.resume.findUnique({
             where:{userId:id},
             select:{
+                id:true,
                 achievements:{
                     select:{id:true}
                 },
@@ -230,95 +231,67 @@ export async function putResumeController(req:Request,res:Response){
         if(!userResume){
             return res.status(404).json({error:"Resume not found"})
         }
+        const resumeId=userResume.id
 
-        const achievementSet:Set<number>=new Set()
-        const projectSet:Set<number>=new Set()
-        const experienceSet:Set<number>=new Set()
-        const educationSet:Set<number>=new Set()
-
-        userResume.achievements.forEach(achievement=>achievementSet.add(achievement.id))
-        userResume.projects.forEach(project=>projectSet.add(project.id))
-        userResume.education.forEach(ed=>educationSet.add(ed.id))
-        userResume.experience.forEach(ex=>experienceSet.add(ex.id))
-
-        let createExperience:ExperienceType[]=[]
-        let editExperience:(ExperienceType&{id:number})[]=[]
-        let deleteExperience:number[]=[]
-
-        for(let ex of resume.experience){
-            const exId=ex.id
-            if(!exId){
-                createExperience.push(ex)
-            }else{
-                if(experienceSet.has(exId)){
-                    experienceSet.delete(exId)
-                    editExperience.push({...ex,id:exId})
+        function populateArrays(fieldArray:any[],idArray:any[]){
+            const set:Set<number>=new Set()
+            idArray.forEach(el=>set.add(el.id))
+            let allArray:{create:any[],edit:any[],delete:number[]}={
+                create:[],
+                edit:[],
+                delete:[]
+            }
+            for(let ex of fieldArray){
+                const exId:number=ex.id
+                if(!exId){
+                    allArray.create.push(ex)
                 }else{
-                    return res.status(400).json({error:"Invalid id in experience"})
+                    if(set.has(exId)){
+                        set.delete(exId)
+                        allArray.edit.push({...ex,id:exId})
+                    }else{
+                        return "Invalid"
+                    }
                 }
             }
+            allArray.delete=[...set]
+            return allArray
         }
-        deleteExperience=[...experienceSet]
 
-
-        let createProject:ProjectType[]=[]
-        let editProject:(ProjectType&{id:number})[]=[]
-        let deleteProject:number[]=[]
-
-        for(let ex of resume.projects){
-            const exId=ex.id
-            if(!exId){
-                createProject.push(ex)
-            }else{
-                if(projectSet.has(exId)){
-                    projectSet.delete(exId)
-                    editProject.push({...ex,id:exId})
-                }else{
-                    return res.status(400).json({error:"Invalid id in projects"})
-                }
-            }
+        const exResult=populateArrays(resume.experience,userResume.experience)
+        if(exResult==="Invalid"){
+            return res.status(400).json({error:`Invalid id in experience`})
         }
-        deleteProject=[...projectSet]
+        const {create:createExperience,edit:editExperience,delete:deleteExperience}=exResult
 
-        
-        let createEducation:EducationType[]=[]
-        let editEducation:(EducationType&{id:number})[]=[]
-        let deleteEducation:number[]=[]
-
-        for(let ex of resume.education){
-            const exId=ex.id
-            if(!exId){
-                createEducation.push(ex)
-            }else{
-                if(educationSet.has(exId)){
-                    educationSet.delete(exId)
-                    editEducation.push({...ex,id:exId})
-                }else{
-                    return res.status(400).json({error:"Invalid id in education"})
-                }
-            }
+        const prResult=populateArrays(resume.projects,userResume.projects)
+        if(prResult==="Invalid"){
+            return res.status(400).json({error:`Invalid id in projects`})
         }
-        deleteEducation=[...educationSet]
+        const {create:createProject,edit:editProject,delete:deleteProject}=prResult
 
-        let createAchievement:AchievementType[]=[]
-        let editAchievement:(AchievementType&{id:number})[]=[]
-        let deleteAchievement:number[]=[]
-
-        for(let ex of resume.achievements){
-            const exId=ex.id
-            if(!exId){
-                createAchievement.push(ex)
-            }else{
-                if(achievementSet.has(exId)){
-                    achievementSet.delete(exId)
-                    editAchievement.push({...ex,id:exId})
-                }else{
-                    return res.status(400).json({error:"Invalid id in achievements"})
-                }
-            }
+        const edResult=populateArrays(resume.education,userResume.education)
+        if(edResult==="Invalid"){
+            return res.status(400).json({error:`Invalid id in education`})
         }
-        deleteAchievement=[...achievementSet]
+        const {create:createEducation,edit:editEducation,delete:deleteEducation}=edResult
 
+        const acResult=populateArrays(resume.achievements,userResume.achievements)
+        if(acResult==="Invalid"){
+            return res.status(400).json({error:`Invalid id in achievements`})
+        }
+        const {create:createAchievement,edit:editAchievement,delete:deleteAchievement}=acResult
+
+    const updatedResume=await prisma.resume.update({
+        where:{id:resumeId},
+        data:{
+            title:resume.title,
+            summary:resume.summary,
+            linkedin:resume.linkedin,
+            skills:resume.skills,
+            visibility:resume.visibility
+        }
+    })
 
     }catch(err){
         console.log(err)
