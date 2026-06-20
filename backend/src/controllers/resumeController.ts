@@ -201,7 +201,7 @@ const EditResumeSchema=ResumeSchema.safeExtend({
 // type ProjectType=z.infer<typeof ProjectSchema>
 // type AchievementType=z.infer<typeof AchievementSchema>
 
-export async function putResumeController(req:Request,res:Response){
+export async function putResumeController(req:Request,res:Response){//the logic on this controller was too complex and in the process of refactoring the code and making it more DRY, I messed up the typescript so there is any type everywhere.
     const id=req.id
     const editResume=req.body
     const result=EditResumeSchema.safeParse(editResume)
@@ -259,40 +259,81 @@ export async function putResumeController(req:Request,res:Response){
         }
 
         const exResult=populateArrays(resume.experience,userResume.experience)
-        if(exResult==="Invalid"){
-            return res.status(400).json({error:`Invalid id in experience`})
-        }
-        const {create:createExperience,edit:editExperience,delete:deleteExperience}=exResult
-
         const prResult=populateArrays(resume.projects,userResume.projects)
-        if(prResult==="Invalid"){
-            return res.status(400).json({error:`Invalid id in projects`})
-        }
-        const {create:createProject,edit:editProject,delete:deleteProject}=prResult
-
         const edResult=populateArrays(resume.education,userResume.education)
-        if(edResult==="Invalid"){
-            return res.status(400).json({error:`Invalid id in education`})
-        }
-        const {create:createEducation,edit:editEducation,delete:deleteEducation}=edResult
-
         const acResult=populateArrays(resume.achievements,userResume.achievements)
-        if(acResult==="Invalid"){
-            return res.status(400).json({error:`Invalid id in achievements`})
+        if(exResult==="Invalid"||prResult==="Invalid"||edResult==="Invalid"||acResult==="Invalid"){
+            return res.status(400).json({error:`Invalid id in relational fields`})
         }
-        const {create:createAchievement,edit:editAchievement,delete:deleteAchievement}=acResult
-
-    const updatedResume=await prisma.resume.update({
-        where:{id:resumeId},
-        data:{
-            title:resume.title,
-            summary:resume.summary,
-            linkedin:resume.linkedin,
-            skills:resume.skills,
-            visibility:resume.visibility
-        }
-    })
-
+        const updatedResume=await prisma.resume.update({
+            where:{id:resumeId},
+            data:{
+                title:resume.title,
+                summary:resume.summary,
+                linkedin:resume.linkedin?resume.linkedin:null,
+                skills:resume.skills,
+                visibility:resume.visibility,
+                achievements:{
+                    createMany:{data:acResult.create},
+                    deleteMany:{
+                        id:{in:acResult.delete}
+                    },
+                    update:acResult.edit.map(field=>{
+                        const {id,...updatedField}=field
+                        return({
+                            where:{id},
+                            data:updatedField
+                        })
+                    })
+                },
+                projects:{
+                    createMany:{data:prResult.create},
+                    deleteMany:{
+                        id:{in:prResult.delete}
+                    },
+                    update:prResult.edit.map(field=>{
+                        const {id,...updatedField}=field
+                        return({
+                            where:{id},
+                            data:updatedField
+                        })
+                    })
+                },
+                experience:{
+                    createMany:{data:exResult.create},
+                    deleteMany:{
+                        id:{in:exResult.delete}
+                    },
+                    update:exResult.edit.map(field=>{
+                        const {id,...updatedField}=field
+                        return({
+                            where:{id},
+                            data:updatedField
+                        })
+                    })
+                },
+                education:{
+                    createMany:{data:edResult.create},
+                    deleteMany:{
+                        id:{in:edResult.delete}
+                    },
+                    update:edResult.edit.map(field=>{
+                        const {id,...updatedField}=field
+                        return({
+                            where:{id},
+                            data:updatedField
+                        })
+                    })
+                }
+            },
+            include:{
+                achievements:true,
+                projects:true,
+                education:true,
+                experience:true
+            }
+        })
+        return res.status(200).json({message:"Resume edited successfully", data:updatedResume})
     }catch(err){
         console.log(err)
         return res.status(500).json({error:"Internal server error"})
