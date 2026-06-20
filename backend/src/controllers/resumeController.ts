@@ -184,17 +184,23 @@ export async function getEachResumeController(req:Request,res:Response){
 const EditResumeSchema=ResumeSchema.safeExtend({
     achievements:z.array(AchievementSchema.safeExtend({
         id:z.int().min(1).optional()
-    })),
+    })).default([]),
     projects:z.array(ProjectSchema.safeExtend({
         id:z.int().min(1).optional()
-    })),
+    })).default([]),
     education:z.array(EducationSchema.safeExtend({
         id:z.int().min(1).optional()
-    })),
+    })).default([]),
     experience:z.array(ExperienceSchema.safeExtend({
         id:z.int().min(1).optional()
-    }))
+    })).default([])
 })
+
+type EducationType=z.infer<typeof EducationSchema>
+type ExperienceType=z.infer<typeof ExperienceSchema>
+type ProjectType=z.infer<typeof ProjectSchema>
+type AchievementType=z.infer<typeof AchievementSchema>
+
 export async function putResumeController(req:Request,res:Response){
     const id=req.id
     const editResume=req.body
@@ -203,5 +209,120 @@ export async function putResumeController(req:Request,res:Response){
         return res.status(400).json({error:result.error.issues.map(err=>err.message)})
     }
     const resume=result.data
+    try{
+        const userResume=await prisma.resume.findUnique({
+            where:{userId:id},
+            select:{
+                achievements:{
+                    select:{id:true}
+                },
+                projects:{
+                    select:{id:true}
+                },
+                education:{
+                    select:{id:true}
+                },
+                experience:{
+                    select:{id:true}
+                },
+            }
+        })
+        if(!userResume){
+            return res.status(404).json({error:"Resume not found"})
+        }
+
+        const achievementSet:Set<number>=new Set()
+        const projectSet:Set<number>=new Set()
+        const experienceSet:Set<number>=new Set()
+        const educationSet:Set<number>=new Set()
+
+        userResume.achievements.forEach(achievement=>achievementSet.add(achievement.id))
+        userResume.projects.forEach(project=>projectSet.add(project.id))
+        userResume.education.forEach(ed=>educationSet.add(ed.id))
+        userResume.experience.forEach(ex=>experienceSet.add(ex.id))
+
+        let createExperience:ExperienceType[]=[]
+        let editExperience:(ExperienceType&{id:number})[]=[]
+        let deleteExperience:number[]=[]
+
+        for(let ex of resume.experience){
+            const exId=ex.id
+            if(!exId){
+                createExperience.push(ex)
+            }else{
+                if(experienceSet.has(exId)){
+                    experienceSet.delete(exId)
+                    editExperience.push({...ex,id:exId})
+                }else{
+                    return res.status(400).json({error:"Invalid id in experience"})
+                }
+            }
+        }
+        deleteExperience=[...experienceSet]
+
+
+        let createProject:ProjectType[]=[]
+        let editProject:(ProjectType&{id:number})[]=[]
+        let deleteProject:number[]=[]
+
+        for(let ex of resume.projects){
+            const exId=ex.id
+            if(!exId){
+                createProject.push(ex)
+            }else{
+                if(projectSet.has(exId)){
+                    projectSet.delete(exId)
+                    editProject.push({...ex,id:exId})
+                }else{
+                    return res.status(400).json({error:"Invalid id in projects"})
+                }
+            }
+        }
+        deleteProject=[...projectSet]
+
+        
+        let createEducation:EducationType[]=[]
+        let editEducation:(EducationType&{id:number})[]=[]
+        let deleteEducation:number[]=[]
+
+        for(let ex of resume.education){
+            const exId=ex.id
+            if(!exId){
+                createEducation.push(ex)
+            }else{
+                if(educationSet.has(exId)){
+                    educationSet.delete(exId)
+                    editEducation.push({...ex,id:exId})
+                }else{
+                    return res.status(400).json({error:"Invalid id in education"})
+                }
+            }
+        }
+        deleteEducation=[...educationSet]
+
+        let createAchievement:AchievementType[]=[]
+        let editAchievement:(AchievementType&{id:number})[]=[]
+        let deleteAchievement:number[]=[]
+
+        for(let ex of resume.achievements){
+            const exId=ex.id
+            if(!exId){
+                createAchievement.push(ex)
+            }else{
+                if(achievementSet.has(exId)){
+                    achievementSet.delete(exId)
+                    editAchievement.push({...ex,id:exId})
+                }else{
+                    return res.status(400).json({error:"Invalid id in achievements"})
+                }
+            }
+        }
+        deleteAchievement=[...achievementSet]
+
+
+    }catch(err){
+        console.log(err)
+        return res.status(500).json({error:"Internal server error"})
+    }
 
 }
