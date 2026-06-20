@@ -2,45 +2,36 @@ import type {Request,Response} from 'express'
 import {prisma} from '../lib/prisma'
 import * as z from 'zod'
 
-const ResumeSchema=z.object({
-    title:z.string().trim().min(1,{
-        error:"Title cannot be empty"
-    }).max(30,{
-        error:"Title cannot be more than 30 charcters"
+const AchievementSchema=z.object({
+    name:z.string().trim().min(1,{
+        error:"Name cannot be empty"
     }),
-    summary:z.string().trim().min(1,{
-        error:"Summary cannot be empty"
+    description:z.string().trim().min(1,{
+        error:"Description cannot be empty"
+    })
+})
+
+const ProjectSchema=z.object({
+    name:z.string().trim().min(1,{
+        error:"Name cannot be empty"
     }),
-    linkedin:z.url({error:"Linkedin must be valid url"}).optional(),
-    skills:z.array(z.string()).default([]),
-    visibility:z.boolean().default(true),
-    achievements:z.array(z.object({
-        name:z.string().trim().min(1,{
-            error:"Name cannot be empty"
-        }),
-        description:z.string().trim().min(1,{
-            error:"Description cannot be empty"
-        })
-    })).default([]),
-    projects:z.array(z.object({
-        name:z.string().trim().min(1,{
-            error:"Name cannot be empty"
-        }),
-        description:z.string().trim().min(1,{
-            error:"Description cannot be empty"
-        }),
-        sourceCode:z.url({error:"Source code must be valid url"}).optional(),
-        deployedLink:z.url({error:"Deployed link must be valid url"}).optional()
-    })).default([]),
-    education:z.array(z.object({
-        institution:z.string().trim().min(1,{
-            error:"Institution cannot be empty"
-        }),
-        degree:z.string().trim().optional(),
-        startDate:z.date().max(new Date(),{error:"Start date cannot be in the future"}),
-        endDate:z.date().optional()
-    }).refine(data=>data.startDate.getTime()<(data.endDate?data.endDate.getTime():new Date().getDate()),{error:"Cannot have start date after end date"})).default([]),
-    experience:z.array(z.object({
+    description:z.string().trim().min(1,{
+        error:"Description cannot be empty"
+    }),
+    sourceCode:z.url({error:"Source code must be valid url"}).optional(),
+    deployedLink:z.url({error:"Deployed link must be valid url"}).optional()
+})
+
+const EducationSchema=z.object({
+    institution:z.string().trim().min(1,{
+        error:"Institution cannot be empty"
+    }),
+    degree:z.string().trim().optional(),
+    startDate:z.date().max(new Date(),{error:"Start date cannot be in the future"}),
+    endDate:z.date().optional()
+}).refine(data=>data.startDate.getTime()<(data.endDate?data.endDate.getTime():new Date().getTime()),{error:"Cannot have start date after end date"})
+
+const ExperienceSchema=z.object({
         company:z.string().trim().min(1,{
             error:"Institution cannot be empty"
         }),
@@ -49,7 +40,24 @@ const ResumeSchema=z.object({
         }),
         startDate:z.date().max(new Date(),{error:"Start date cannot be in the future"}),
         endDate:z.date().optional()
-    }).refine(data=>data.startDate.getTime()<(data.endDate?data.endDate.getTime():new Date().getTime()),{error:"Cannot have start date after end date"})).default([]),
+    }).refine(data=>data.startDate.getTime()<(data.endDate?data.endDate.getTime():new Date().getTime()),{error:"Cannot have start date after end date"})
+
+const ResumeSchema=z.object({
+    title:z.string({error:"Title must be present"}).trim().min(1,{
+        error:"Title cannot be empty"
+    }).max(30,{
+        error:"Title cannot be more than 30 charcters"
+    }),
+    summary:z.string({error:"Summary must be present"}).trim().min(1,{
+        error:"Summary cannot be empty"
+    }),
+    linkedin:z.url({error:"Linkedin must be valid url"}).optional(),
+    skills:z.array(z.string()).default([]),
+    visibility:z.boolean().default(true),
+    achievements:z.array(AchievementSchema).default([]),
+    projects:z.array(ProjectSchema).default([]),
+    education:z.array(EducationSchema).default([]),
+    experience:z.array(ExperienceSchema).default([]),
 })
 
 export async function createResumeController(req:Request,res:Response){
@@ -172,4 +180,28 @@ export async function getEachResumeController(req:Request,res:Response){
     }catch(err){
         return res.status(500).json({error:"Internal server error"})
     }
+}
+const EditResumeSchema=ResumeSchema.safeExtend({
+    achievements:z.array(AchievementSchema.safeExtend({
+        id:z.int().min(1).optional()
+    })),
+    projects:z.array(ProjectSchema.safeExtend({
+        id:z.int().min(1).optional()
+    })),
+    education:z.array(EducationSchema.safeExtend({
+        id:z.int().min(1).optional()
+    })),
+    experience:z.array(ExperienceSchema.safeExtend({
+        id:z.int().min(1).optional()
+    }))
+})
+export async function putResumeController(req:Request,res:Response){
+    const id=req.id
+    const editResume=req.body
+    const result=EditResumeSchema.safeParse(editResume)
+    if(!result.success){
+        return res.status(400).json({error:result.error.issues.map(err=>err.message)})
+    }
+    const resume=result.data
+
 }
