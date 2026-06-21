@@ -29,7 +29,7 @@ model User{
 model Education{
   id Int @id @default(autoincrement())
   resumeId Int
-  resume Resume @relation(fields: [resumeId], references: [id])
+  resume Resume @relation(fields: [resumeId], references: [id],onDelete: Cascade)
   institution String
   degree String?
   startDate DateTime
@@ -40,7 +40,7 @@ model Education{
 model Experience{
   id Int @id @default(autoincrement())
   resumeId Int
-  resume Resume @relation(fields: [resumeId], references: [id])
+  resume Resume @relation(fields: [resumeId], references: [id],onDelete: Cascade)
   company String
   role String
   startDate DateTime
@@ -51,7 +51,7 @@ model Experience{
 model Project{
   id Int @id @default(autoincrement())
   resumeId Int
-  resume Resume @relation(fields: [resumeId], references: [id])
+  resume Resume @relation(fields: [resumeId], references: [id],onDelete: Cascade)
   name String
   description String
   sourceCode String?
@@ -61,7 +61,7 @@ model Project{
 model Achievement{
   id Int @id @default(autoincrement())
   resumeId Int
-  resume Resume @relation(fields: [resumeId], references: [id])
+  resume Resume @relation(fields: [resumeId], references: [id],onDelete: Cascade)
   name String
   description String
   @@map("achievements")

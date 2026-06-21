@@ -340,3 +340,23 @@ export async function putResumeController(req:Request,res:Response){//the logic 
     }
 
 }
+
+export async function deleteResume(req:Request,res:Response){
+    const id=req.id
+    try{
+        const isResume=await prisma.resume.findUnique({
+            where:{userId:id},
+            select:{id:true}
+        })
+        if(!isResume){
+            return res.status(404).json({error:"Resume not found"})
+        }
+        await prisma.resume.delete({
+            where:{id:isResume.id}
+        })
+        return res.status(204).send()
+    }catch(err){
+        console.log(err)
+        return res.status(500).json({error:"Internal server error"})
+    }
+}
