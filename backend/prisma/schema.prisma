@@ -24,6 +24,8 @@ model User{
   password String
   role Role
   resume Resume?
+  profilePublicId String?
+  profileUrl String @default("https://res.cloudinary.com/dls73n4ig/image/upload/v1782037910/resume_builder/profile/default.jpg")
   @@map("users")
 }
 model Education{
