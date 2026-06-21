@@ -59,5 +59,13 @@ export async function logoutController(req:Request,res:Response){
     return res.status(200).json({message:'Logout successful'})
 }
 export async function meController(req:Request,res:Response){
-    return res.status(200).json({id:req.id,role:req.role})
+    const id=req.id
+    const user=await prisma.user.findUnique({
+        where:{id},
+        select:{name:true,profileUrl:true}
+    })
+    if(!user){
+        return res.status(404).json({error:"User not found"})
+    }
+    return res.status(200).json({id,role:req.role,name:user.name,profileUrl:user.profileUrl})
 }
