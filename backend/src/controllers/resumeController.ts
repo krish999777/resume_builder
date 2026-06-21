@@ -116,24 +116,66 @@ export async function createResumeController(req:Request,res:Response){
     }
 }
 
-export async function getResumeController(req:Request,res:Response){
-    try{
+const QuerySchema=z.object({
+    search:z.string().optional(),
+    page:z.coerce.number({error:"Page must be a number"}).optional(),
+    sort:z.enum(['skill','creation'],{error:"Sort must be 'skill' or 'creation'"}).optional()
+})
 
+export async function getResumeController(req:Request<unknown,unknown,unknown,{
+    search:string,
+    page:string,
+    sort:'skill'|'creation'
+}>,res:Response){
+    try{
         const id=req.id
         const role=req.role
         if(role==='recruiter'){
-            const resumes=await prisma.resume.findMany({
-                where:{visibility:true},
-                select:{
-                    title:true,
-                    summary:true,
-                    skills:true,
-                    user:{select:{name:true,id:true}}
+            const queryString=req.query
+            const result=QuerySchema.safeParse(queryString)
+            if(!result.success){
+                return res.status(400).json({error:result.error.issues.map(err=>err.message)})
+            }
+            const query=result.data
+            let queryMerged=""
+            let paramsArray:(string|number)[]=[]
+            if(query.search){
+                queryMerged+=`
+                 AND (
+                    LOWER(name) LIKE $1
+                    OR LOWER(title) LIKE $1
+                    OR LOWER(summary) LIKE $1
+                    OR EXISTS (SELECT 1 FROM unnest(skills) as skill WHERE LOWER(skill) LIKE $1)
+                 )
+                `
+                paramsArray.push(`%${query.search.toLowerCase()}%`)
+            }
+            if(query.sort){
+                if(query.sort==='creation'){
+                    queryMerged+=`
+                         ORDER BY resumes.id DESC
+                    `
+                }else{
+                    queryMerged+=`
+                        ORDER BY ARRAY_LENGTH(skills,1) DESC
+                    `
                 }
-            })
+            }
+            const resumes=await prisma.$queryRawUnsafe(`
+                SELECT title,summary,skills,"userId",users.name AS name,CAST(COUNT(*) OVER() AS INTEGER) AS totalrows FROM resumes
+                INNER JOIN users ON users.id="userId"
+                WHERE visibility=true ${queryMerged}
+                LIMIT 10
+                OFFSET $${paramsArray.length+1}
+            `,...paramsArray,query.page?(10*(query.page-1)):0)
+            if(!Array.isArray(resumes)){
+                return res.status(500).json({error:"Unknown error"})//I doubt this will ever happen, mainly did this for preventing ts error
+            }
             return res.status(200).json({
                 message:resumes.length===0?'No resumes found':'Fetch successful',
-                data:resumes
+                data:resumes,
+                page:query.page?query.page:1,
+                totalPages:resumes.length>0?Math.ceil(resumes[0].totalrows/10):0
             })
         }else{
             const resume=await prisma.resume.findUnique({
