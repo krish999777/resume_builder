@@ -123,7 +123,13 @@ export async function getResumeController(req:Request,res:Response){
         const role=req.role
         if(role==='recruiter'){
             const resumes=await prisma.resume.findMany({
-                where:{visibility:true}
+                where:{visibility:true},
+                select:{
+                    title:true,
+                    summary:true,
+                    skills:true,
+                    user:{select:{name:true,id:true}}
+                }
             })
             return res.status(200).json({
                 message:resumes.length===0?'No resumes found':'Fetch successful',
