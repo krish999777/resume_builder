@@ -17,43 +17,38 @@ export async function putProfileController(req:Request,res:Response){
         if(!user){
             return res.status(404).json({error:"User not found"})//just to stop ts error
         }
-        try{
-            const uploadResult:any=await new Promise((resolve,reject)=>{
-                cloudinary.uploader.upload_stream((error,result)=>{
-                    if(error){
-                        return reject(new Error('Upload failed'))
-                    }
-                    return resolve(result)
-                }).end(req.file?.buffer)
-            })
-            if(user.profilePublicId){
-                try{
-                    const destroy:any=await cloudinary.uploader.destroy(user.profilePublicId)
-                    if(!(destroy.result==='ok')&&!(destroy.result==='not found')){
-                        throw new Error('Failed')
-                    }
-                }catch(err){
-                    console.log(err)
-                    return res.status(500).json({error:"Unknown error deleting profile pciture"})
+        const uploadResult:any=await new Promise((resolve,reject)=>{
+            cloudinary.uploader.upload_stream((error,result)=>{
+                if(error){
+                    return reject(new Error('Upload failed'))
                 }
+                return resolve(result)
+            }).end(req.file?.buffer)
+        })
+        if(user.profilePublicId){
+            try{
+                const destroy:any=await cloudinary.uploader.destroy(user.profilePublicId)
+                if(!(destroy.result==='ok')&&!(destroy.result==='not found')){
+                    throw new Error('Failed')
+                }
+            }catch(err){
+                console.log(err)
+                return res.status(500).json({error:"Unknown error deleting profile picture"})
             }
-            const saveResult=await prisma.user.update({
-                where:{id},
-                data:{
-                    profilePublicId:uploadResult.public_id,
-                    profileUrl:uploadResult.secure_url
-                },
-                select:{
-                    profileUrl:true
-                }
-            })
-            return res.status(200).json({
-                profileUrl:saveResult.profileUrl
-            })
-        }catch(err){
-            console.log(err)
-            return res.status(500).json({error:"Upload failed unknown"})
         }
+        const saveResult=await prisma.user.update({
+            where:{id},
+            data:{
+                profilePublicId:uploadResult.public_id,
+                profileUrl:uploadResult.secure_url
+            },
+            select:{
+                profileUrl:true
+            }
+        })
+        return res.status(200).json({
+            profileUrl:saveResult.profileUrl
+        })
     }catch(err){
         console.log(err)
         return res.status(500).json({error:"Internal server error"})
