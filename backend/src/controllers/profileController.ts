@@ -17,17 +17,6 @@ export async function putProfileController(req:Request,res:Response){
         if(!user){
             return res.status(404).json({error:"User not found"})//just to stop ts error
         }
-        if(user.profilePublicId){
-            try{
-                const destroy:any=await cloudinary.uploader.destroy(user.profilePublicId)
-                if(!(destroy.result==='ok')&&!(destroy.result==='not found')){
-                    throw new Error('Failed')
-                }
-            }catch(err){
-                console.log(err)
-                return res.status(500).json({error:"Unknown error deleting profile pciture"})
-            }
-        }
         try{
             const uploadResult:any=await new Promise((resolve,reject)=>{
                 cloudinary.uploader.upload_stream((error,result)=>{
@@ -37,6 +26,17 @@ export async function putProfileController(req:Request,res:Response){
                     return resolve(result)
                 }).end(req.file?.buffer)
             })
+            if(user.profilePublicId){
+                try{
+                    const destroy:any=await cloudinary.uploader.destroy(user.profilePublicId)
+                    if(!(destroy.result==='ok')&&!(destroy.result==='not found')){
+                        throw new Error('Failed')
+                    }
+                }catch(err){
+                    console.log(err)
+                    return res.status(500).json({error:"Unknown error deleting profile pciture"})
+                }
+            }
             const saveResult=await prisma.user.update({
                 where:{id},
                 data:{
