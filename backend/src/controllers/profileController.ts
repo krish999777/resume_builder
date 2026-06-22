@@ -53,3 +53,37 @@ export async function putProfileController(req:Request,res:Response){
         return res.status(500).json({error:"Internal server error"})
     }
 }
+export async function deleteProfileController(req:Request,res:Response){
+    const id=req.id
+    try{
+        const user=await prisma.user.findUnique({
+            where:{id},
+            select:{
+                profilePublicId:true,
+                profileUrl:true
+            }
+        })
+        if(!user){
+            return res.status(404).json({error:"User not found"})//for ts
+        }
+        if(!user.profilePublicId){
+            return res.status(400).json({error:'Cannot delete default image'})
+        }
+        const destroy:any=await cloudinary.uploader.destroy(user.profilePublicId)
+        if(!(destroy.result==='ok')&&!(destroy.result==='not found')){
+            console.log(destroy)
+        }
+        const updated=await prisma.user.update({
+            where:{id},
+            data:{
+                profilePublicId:null,
+                profileUrl:"https://res.cloudinary.com/dls73n4ig/image/upload/v1782037910/resume_builder/profile/default.jpg"
+            }
+        })
+        return res.status(200).json({profileUrl:updated.profileUrl})
+    }catch(err){
+        console.log(err)
+        return res.status(500).json({error:"Internal server error"})
+    }
+    
+}
