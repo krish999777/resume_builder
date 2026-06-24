@@ -21,7 +21,7 @@ export default function Login() {
     const navigate = useNavigate()
     const mutation = useMutation({
         mutationFn: postLogin,
-        onSuccess: () => navigate('/home')
+        onSuccess: (data) => data.role==='recruiter'?navigate('/resumes'):navigate('/resume')
     })
 
     const { handleSubmit, register, formState: { errors } } = useForm<LoginType>({

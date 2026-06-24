@@ -26,7 +26,7 @@ export default function Signup(){
 
     const mutation=useMutation({
         mutationFn:postSignup,
-        onSuccess:()=>navigate('/home')
+        onSuccess:(data)=>data.role==='recruiter'?navigate('/resumes'):navigate('/resume')
     })
 
     const {watch,register,handleSubmit,formState:{errors}}=useForm<SignupType>({

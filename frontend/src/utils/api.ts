@@ -8,7 +8,7 @@ const api=axios.create({
 export async function postLogin(body:{email:string,password:string}){
     try{
         const res=await api.post('/auth/login',body)
-        return res.data
+        return res.data as {message:string,role:'recruiter'|'candidate'}
     }catch(err:any){
         throw new Error(err.response?.data?.error||'Unkown error')
     }
@@ -17,7 +17,7 @@ export async function postLogin(body:{email:string,password:string}){
 export async function postSignup(body:{role:'candidate'|'recruiter',name:string,email:string,password:string}){
     try{
         const res=await api.post('/auth/signup',body)
-        return res.data
+        return res.data as {message:string,role:'recruiter'|'candidate'}
     }catch(err:any){
         throw new Error(err.response?.data?.error||'Unknown error')
     }
