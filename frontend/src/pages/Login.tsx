@@ -20,7 +20,7 @@ type LoginType=z.infer<typeof LoginSchema>
 export default function Login() {
     const navigate = useNavigate()
     const mutation = useMutation({
-        mutationFn: (body: { email: string; password: string }) => postLogin(body),
+        mutationFn: postLogin,
         onSuccess: () => navigate('/home')
     })
 
