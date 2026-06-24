@@ -1,5 +1,5 @@
 import './Login.css'
-import {useMutation} from '@tanstack/react-query'
+import {useMutation,useQueryClient} from '@tanstack/react-query'
 import {useForm} from 'react-hook-form'
 import type {SubmitHandler} from 'react-hook-form'
 import {zodResolver} from '@hookform/resolvers/zod'
@@ -18,10 +18,14 @@ const LoginSchema=z.object({
 type LoginType=z.infer<typeof LoginSchema>
 
 export default function Login() {
+    const queryClient=useQueryClient()
     const navigate = useNavigate()
     const mutation = useMutation({
         mutationFn: postLogin,
-        onSuccess: (data) => data.role==='recruiter'?navigate('/resumes'):navigate('/resume')
+        onSuccess: async (data) => {
+            await queryClient.resetQueries({queryKey:['me']})
+            data.role==='recruiter'?navigate('/'):navigate('/resume')
+        }
     })
 
     const { handleSubmit, register, formState: { errors } } = useForm<LoginType>({

@@ -4,7 +4,7 @@ import {useForm} from 'react-hook-form'
 import type { SubmitHandler } from 'react-hook-form'
 import {zodResolver} from '@hookform/resolvers/zod'
 import {postSignup} from '../utils/api'
-import {useMutation} from '@tanstack/react-query'
+import {useMutation,useQueryClient} from '@tanstack/react-query'
 import {useNavigate} from 'react-router-dom'
 
 const SignupSchema=z.object({
@@ -23,10 +23,13 @@ type SignupType=z.infer<typeof SignupSchema>
 export default function Signup(){
 
     const navigate=useNavigate()
-
+    const queryClient=useQueryClient()
     const mutation=useMutation({
         mutationFn:postSignup,
-        onSuccess:(data)=>data.role==='recruiter'?navigate('/resumes'):navigate('/resume')
+        onSuccess: async (data) => {
+            await queryClient.resetQueries({queryKey:['me']})
+            data.role==='recruiter'?navigate('/'):navigate('/resume')
+        }
     })
 
     const {watch,register,handleSubmit,formState:{errors}}=useForm<SignupType>({
