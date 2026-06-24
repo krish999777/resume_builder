@@ -4,7 +4,8 @@ import {getMe} from '../utils/api'
 export default function useMe(){
     const query=useQuery({
         queryFn:getMe,
-        queryKey:['me']
+        queryKey:['me'],
+        retry: false
     })
     return query
 }
