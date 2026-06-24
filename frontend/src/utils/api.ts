@@ -13,3 +13,12 @@ export async function postLogin(body:{email:string,password:string}){
         throw new Error(err.response?.data?.error||'Unkown error')
     }
 }
+
+export async function postSignup(body:{role:'candidate'|'recruiter',name:string,email:string,password:string}){
+    try{
+        const res=await api.post('/auth/signup',body)
+        return res.data
+    }catch(err:any){
+        throw new Error(err.response?.data?.error||'Unknown error')
+    }
+}
