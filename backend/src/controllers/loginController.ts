@@ -44,7 +44,7 @@ export async function loginController(req:Request,res:Response){
             httpOnly:true,
             sameSite:'none'
         })
-        return res.status(200).json({message:"Login successful"})
+        return res.status(200).json({message:"Login successful",role:dbPassword.role})
     }catch(err){
         console.log(err)
         return res.status(500).json({error:"Internal server error"})

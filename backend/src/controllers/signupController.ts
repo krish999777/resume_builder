@@ -44,7 +44,7 @@ export async function signupController(req:Request,res:Response){
             sameSite:'none'
         })
     
-        res.status(201).json({message:"Signup successful"})
+        res.status(201).json({message:"Signup successful",role:response.role})
     }catch(err){
         return res.status(500).json({error:"Internal server error"})
     }
