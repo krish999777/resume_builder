@@ -26,7 +26,12 @@ export async function postSignup(body:{role:'candidate'|'recruiter',name:string,
 export async function getMe(){
     try{
         const res=await api.get('/auth/me')
-        return res.data
+        return res.data as {
+            id:number,
+            role:'recruiter'|'candidate',
+            name:string,
+            profileUrl:string
+        } 
     }catch(err:any){
         throw new Error(err.response?.data?.error||'Unknown error')
     }
