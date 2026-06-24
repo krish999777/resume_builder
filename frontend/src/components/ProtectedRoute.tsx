@@ -4,7 +4,7 @@ import {Navigate} from 'react-router-dom'
 import type {JSX} from 'react'
 import LoadingSpinner from '../components/LoadingSpinner'
  
-export default function ProtectedRoute({children}:{children:JSX.Element}){
+export default function ProtectedRoute({children,role}:{children:JSX.Element,role?:'candidate'|'recruiter'}){
     const {isPending,isError,data}=useMe()
     if(isPending){
         return(<LoadingSpinner/>)
@@ -13,6 +13,9 @@ export default function ProtectedRoute({children}:{children:JSX.Element}){
         return <Navigate to="/login"/>
     }
     if(data){
+        if(role&&role!==data.role){
+            return <Navigate to={data.role==='candidate'?'/resume':'/resumes'}/>
+        }
         return(
         <>
             <Navbar userData={data}/>
