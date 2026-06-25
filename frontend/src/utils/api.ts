@@ -50,6 +50,15 @@ export async function getResume(){
                 skills: string[];
                 visibility: boolean;
                 userId: number;
+                user: {
+                    id: number;
+                    name: string;
+                    role: 'candidate'|'recruiter';
+                    email: string;
+                    password: string;
+                    profilePublicId: string | null;
+                    profileUrl: string;
+                },
                 achievements: {
                     name: string;
                     id: number;
@@ -80,7 +89,7 @@ export async function getResume(){
                     company: string;
                     resumeId: number;
                 }[]
-            }
+            }|null
         }
     }catch(err:any){
         throw new Error(err.response?.data?.error||'Unknown error')

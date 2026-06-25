@@ -1,0 +1,258 @@
+.resume-error-wrap,
+.resume-empty-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: calc(100vh - 64px);
+    gap: 0.75rem;
+    text-align: center;
+    padding: 2rem;
+}
+
+.resume-error-icon,
+.resume-empty-icon {
+    font-size: 2.5rem;
+}
+
+.resume-error-title,
+.resume-empty-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+}
+
+.resume-error-message {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.resume-empty-body {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.resume-error-retry,
+.resume-empty-btn {
+    margin-top: 0.5rem;
+    padding: 0.5rem 1.25rem;
+    border-radius: 8px;
+    border: none;
+    background: #2563eb;
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.resume-error-retry:hover,
+.resume-empty-btn:hover {
+    background: #1d4ed8;
+}
+
+.resume-wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.resume-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.resume-name {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #111827;
+    margin: 0 0 0.25rem;
+}
+
+.resume-title {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #4b5563;
+    margin: 0 0 0.4rem;
+}
+
+.resume-linkedin {
+    font-size: 0.85rem;
+    color: #2563eb;
+    text-decoration: none;
+}
+
+.resume-linkedin:hover {
+    text-decoration: underline;
+}
+
+.resume-header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.6rem;
+}
+
+.resume-visibility {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.resume-visibility-public {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.resume-visibility-private {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.resume-export-btn {
+    padding: 0.45rem 1rem;
+    border-radius: 7px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    color: #374151;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.resume-export-btn:hover {
+    background: #f3f4f6;
+    border-color: #d1d5db;
+}
+
+.resume-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.resume-section-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #9ca3af;
+    margin: 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.resume-summary {
+    font-size: 0.95rem;
+    color: #374151;
+    line-height: 1.7;
+    margin: 0;
+}
+
+.resume-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.resume-skill-tag {
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.resume-card {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.resume-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.resume-card-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+}
+
+.resume-card-subtitle {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0.15rem 0 0;
+}
+
+.resume-card-date {
+    font-size: 0.8rem;
+    color: #9ca3af;
+    white-space: nowrap;
+}
+
+.resume-card-body {
+    font-size: 0.875rem;
+    color: #4b5563;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.resume-card-links {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+.resume-card-link {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #2563eb;
+    text-decoration: none;
+    padding: 0.2rem 0.6rem;
+    border-radius: 5px;
+    background: #eff6ff;
+    transition: background 0.15s;
+}
+
+.resume-card-link:hover {
+    background: #dbeafe;
+}
+.resume-edit-btn {
+    padding: 0.45rem 1rem;
+    border-radius: 7px;
+    border: none;
+    background: #2563eb;
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.resume-edit-btn:hover {
+    background: #1d4ed8;
+}
