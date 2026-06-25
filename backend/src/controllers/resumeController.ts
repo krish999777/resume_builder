@@ -27,8 +27,8 @@ const EducationSchema=z.object({
         error:"Institution cannot be empty"
     }),
     degree:z.string().trim().optional(),
-    startDate:z.date().max(new Date(),{error:"Start date cannot be in the future"}),
-    endDate:z.date().optional()
+    startDate:z.coerce.date().max(new Date(),{error:"Start date cannot be in the future"}),
+    endDate:z.coerce.date().optional()
 }).refine(data=>data.startDate.getTime()<(data.endDate?data.endDate.getTime():new Date().getTime()),{error:"Cannot have start date after end date"})
 
 const ExperienceSchema=z.object({
@@ -38,8 +38,8 @@ const ExperienceSchema=z.object({
         role:z.string().trim().min(1,{
             error:"Role cannot be empty"
         }),
-        startDate:z.date().max(new Date(),{error:"Start date cannot be in the future"}),
-        endDate:z.date().optional()
+        startDate:z.coerce.date().max(new Date(),{error:"Start date cannot be in the future"}),
+        endDate:z.coerce.date().optional()
     }).refine(data=>data.startDate.getTime()<(data.endDate?data.endDate.getTime():new Date().getTime()),{error:"Cannot have start date after end date"})
 
 const ResumeSchema=z.object({
@@ -184,11 +184,12 @@ export async function getResumeController(req:Request<unknown,unknown,unknown,{
                     achievements:true,
                     projects:true,
                     experience:true,
-                    education:true
+                    education:true,
+                    user:true
                 }
             })
             if(!resume){
-                return res.status(200).json({error:"Resume not found, please create a resume first",data:{}})
+                return res.status(200).json({error:"Resume not found, please create a resume first",data:null})
             }
             return res.status(200).json({
                 message:"Resume found",
