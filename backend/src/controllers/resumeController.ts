@@ -188,7 +188,7 @@ export async function getResumeController(req:Request<unknown,unknown,unknown,{
                 }
             })
             if(!resume){
-                return res.status(404).json({error:"Resume not found, please create a resume first"})
+                return res.status(200).json({error:"Resume not found, please create a resume first",data:{}})
             }
             return res.status(200).json({
                 message:"Resume found",
