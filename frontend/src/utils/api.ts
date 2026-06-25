@@ -36,3 +36,53 @@ export async function getMe(){
         throw new Error(err.response?.data?.error||'Unknown error')
     }
 }
+
+export async function getResume(){
+    try{
+        const res=await api.get('/resume')
+        return res.data as {
+            message:string,
+            data:{
+                id: number;
+                title: string;
+                summary: string;
+                linkedin: string | null;
+                skills: string[];
+                visibility: boolean;
+                userId: number;
+                achievements: {
+                    name: string;
+                    id: number;
+                    description: string;
+                    resumeId: number;
+                }[],
+                projects: {
+                    name: string;
+                    id: number;
+                    description: string;
+                    sourceCode: string | null;
+                    deployedLink: string | null;
+                    resumeId: number;
+                }[],
+                education: {
+                    id: number;
+                    institution: string;
+                    degree: string | null;
+                    startDate: Date;
+                    endDate: Date | null;
+                    resumeId: number;
+                }[],
+                experience: {
+                    role: string;
+                    id: number;
+                    startDate: Date;
+                    endDate: Date | null;
+                    company: string;
+                    resumeId: number;
+                }[]
+            }
+        }
+    }catch(err:any){
+        throw new Error(err.response?.data?.error||'Unknown error')
+    }
+}
