@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type {PostResumeType} from '../pages/CreateResume'
+import type {PostResumeType} from '../components/ResumeForm'
 
 const api=axios.create({
     baseURL:import.meta.env.VITE_BACKEND_URL||'http://localhost:8000',
