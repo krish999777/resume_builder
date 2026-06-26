@@ -256,3 +256,23 @@
 .resume-edit-btn:hover {
     background: #1d4ed8;
 }
+.resume-delete-btn {
+    padding: 0.45rem 1rem;
+    border-radius: 7px;
+    border: 1px solid #fca5a5;
+    background: #fff;
+    color: #dc2626;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.resume-delete-btn:hover {
+    background: #fef2f2;
+    border-color: #f87171;
+}
+.resume-header-buttons{
+    display:flex;
+    gap:15px;
+}

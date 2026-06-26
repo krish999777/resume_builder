@@ -1,15 +1,29 @@
 import './Resume.css'
-import {useQuery} from '@tanstack/react-query'
+import {useQuery,useMutation,useQueryClient} from '@tanstack/react-query'
 import {useNavigate} from 'react-router-dom'
-import {getResume} from '../utils/api'
+import {getResume,deleteResume} from '../utils/api'
 import LoadingSpinner from '../components/LoadingSpinner'
+import toast from 'react-hot-toast'
 
 export default function Resume(){
     const navigate=useNavigate()
+    const queryClient=useQueryClient()
     const {data,isPending,error}=useQuery({
         queryFn:getResume,
         queryKey:['resume'],
         
+    })
+    const deleteMutation=useMutation({
+        mutationFn:deleteResume,
+        onSuccess:()=>{
+            toast.success('Deleted resume successfuly')
+            queryClient.invalidateQueries({
+                queryKey:['resume']
+            })
+        },
+        onError:()=>{
+            toast.error('Unable to delete resume')
+        }
     })
     if(isPending){
         return <LoadingSpinner/>
@@ -46,8 +60,15 @@ export default function Resume(){
                     <span className={`resume-visibility ${data.data.visibility?'resume-visibility-public':'resume-visibility-private'}`}>
                         {data.data.visibility?'Public':'Private'}
                     </span>
-                    <button className="resume-edit-btn" onClick={()=>navigate('/resume/edit')}>Edit Resume</button>
-                    <button className="resume-export-btn" onClick={()=>navigate('/resume/export')}>Export PDF</button>
+                    <div className="resume-header-buttons">
+                        <button className="resume-edit-btn" onClick={()=>navigate('/resume/edit')}>Edit Resume</button>
+                        <button className="resume-export-btn" onClick={()=>navigate('/resume/export')}>Export PDF</button>
+                        <button className="resume-delete-btn" onClick={()=>{
+                            if(confirm('Are you sure you want to delete resume?')){
+                                deleteMutation.mutate()
+                            }
+                        }}>Delete Resume</button>
+                    </div>
                 </div>
             </div>
             <section className="resume-section">

@@ -124,3 +124,11 @@ export async function putResume(body:PutResumeType){
         throw new Error(err.response?.data?.error||'Unknown error')
     }
 }
+
+export async function deleteResume(){
+    try{
+        await api.delete('/resume')
+    }catch(err:any){
+        throw new Error(err.response?.data?.error||'Unknown error')
+    }
+}
