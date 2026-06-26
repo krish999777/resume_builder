@@ -85,6 +85,10 @@ export default function CreateResume(){
         control,
         name:'education'
     })
+    const experienceField=useFieldArray({
+        control,
+        name:'experience'
+    })
     const onSubmit:SubmitHandler<InputType>=(data)=>console.log(data)
     const skills=watch('skills')
     const visibility=watch('visibility')
@@ -161,7 +165,33 @@ export default function CreateResume(){
                 </div>
                 :
                 null}
-                {section===3?<div></div>:null}
+                {section===3?
+                <div>
+                    {experienceField.fields.map((field,index)=>(
+                        <div key={field.id}>
+                            <input {...register(`experience.${index}.company`)}/>
+                            <p>{errors.experience?.[index]?.company?.message||null}</p>
+                            <input {...register(`experience.${index}.role`)}/>
+                            <p>{errors.experience?.[index]?.role?.message||null}</p>
+                            <input type="date" {...register(`experience.${index}.startDate`)}/>
+                            <p>{errors.experience?.[index]?.startDate?.message}</p>
+                            <input type="date" {...register(`experience.${index}.endDate`,{
+                                setValueAs:(val)=>val===''?undefined:val
+                            })}/>
+                            <p>{errors.experience?.[index]?.endDate?.message}</p>
+                            <button type="button" onClick={()=>experienceField.remove(index)}>🗑️</button>
+                            <p>{errors.experience?.[index]?.message}</p>
+                        </div>
+                    ))}
+                    <button type="button" onClick={()=>experienceField.append({
+                        company:'',
+                        role:'',
+                        startDate:'',
+                        endDate:''
+                    })}>+</button>
+                </div>
+                :
+                null}
                 {section===4?<div></div>:null}
                 {section===5?<div></div>:null}
                 <button>Save</button>
