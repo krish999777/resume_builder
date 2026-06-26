@@ -121,154 +121,214 @@ export default function CreateResume(){
     const visibility=watch('visibility')
 
     return(
-        <div>
-            <button onClick={()=>setSection(1)}>Primary</button>
-            <button onClick={()=>setSection(2)}>Education</button>
-            <button onClick={()=>setSection(3)}>Experience</button>
-            <button onClick={()=>setSection(4)}>Projects</button>
-            <button onClick={()=>setSection(5)}>Achievements</button>
-            <form onSubmit={handleSubmit(onSubmit)}>
-                {section===1?
-                <div>
-                    Title:<input {...register('title')} required={true}/>
-                    {errors.title?<p>{errors.title.message}</p>:null}
-                    Summary:<input {...register('summary')} required={true}/>
-                    {errors.summary?<p>{errors.summary.message}</p>:null}
-                    Skills:<div>
-                        {(skills||[]).map((skill,index)=>{
-                            return(
-                                <div key={index}>{skill}<button type="button" onClick={()=>{
-                                    setValue('skills',(skills||[]).filter((_,i)=>i!==index))
-                                }}>🗑️</button></div>
-                            )
-                        })}
-                        <input type="text" value={skillCurrent} onChange={(e)=>setSkillCurrent(e.target.value)}/>
-                        <button type="button" onClick={()=>{
-                            if(skillCurrent===''){
-                                return
-                            }
-                            setValue('skills',[...(skills||[]),skillCurrent])
-                            setSkillCurrent('')
-                        }}>+</button>
+        <div className="cr-wrap">
+            <aside className="cr-sidebar">
+                <h2 className="cr-sidebar-title">Create Resume</h2>
+                <nav className="cr-nav">
+                    <button type="button" className={`cr-nav-btn ${section===1?'cr-nav-btn-active':''}`} onClick={()=>setSection(1)}>Primary</button>
+                    <button type="button" className={`cr-nav-btn ${section===2?'cr-nav-btn-active':''}`} onClick={()=>setSection(2)}>Education</button>
+                    <button type="button" className={`cr-nav-btn ${section===3?'cr-nav-btn-active':''}`} onClick={()=>setSection(3)}>Experience</button>
+                    <button type="button" className={`cr-nav-btn ${section===4?'cr-nav-btn-active':''}`} onClick={()=>setSection(4)}>Projects</button>
+                    <button type="button" className={`cr-nav-btn ${section===5?'cr-nav-btn-active':''}`} onClick={()=>setSection(5)}>Achievements</button>
+                </nav>
+            </aside>
+            <main className="cr-main">
+                <form onSubmit={handleSubmit(onSubmit)} className="cr-form">
+                    {section===1?
+                    <div className="cr-section">
+                        <h3 className="cr-section-title">Primary Info</h3>
+                        <div className="cr-field">
+                            <label className="cr-label">Title</label>
+                            <input {...register('title')} className={`cr-input ${errors.title?'cr-input-error':''}`} placeholder="e.g. Full Stack Developer"/>
+                            {errors.title&&<p className="cr-error">{errors.title.message}</p>}
+                        </div>
+                        <div className="cr-field">
+                            <label className="cr-label">Summary</label>
+                            <textarea {...register('summary')} className={`cr-textarea ${errors.summary?'cr-input-error':''}`} placeholder="Brief professional summary..."/>
+                            {errors.summary&&<p className="cr-error">{errors.summary.message}</p>}
+                        </div>
+                        <div className="cr-field">
+                            <label className="cr-label">Skills</label>
+                            <div className="cr-skills-tags">
+                                {(skills||[]).map((skill,index)=>(
+                                    <span key={index} className="cr-skill-tag">
+                                        {skill}
+                                        <button type="button" className="cr-skill-remove" onClick={()=>setValue('skills',(skills||[]).filter((_,i)=>i!==index))}>×</button>
+                                    </span>
+                                ))}
+                            </div>
+                            <div className="cr-skills-input-row">
+                                <input type="text" className="cr-input" value={skillCurrent} onChange={(e)=>setSkillCurrent(e.target.value)} placeholder="Add a skill..." onKeyDown={(e)=>{
+                                    if(e.key==='Enter'){
+                                        e.preventDefault()
+                                        if(skillCurrent==='') return
+                                        setValue('skills',[...(skills||[]),skillCurrent])
+                                        setSkillCurrent('')
+                                    }
+                                }}/>
+                                <button type="button" className="cr-add-btn" onClick={()=>{
+                                    if(skillCurrent==='') return
+                                    setValue('skills',[...(skills||[]),skillCurrent])
+                                    setSkillCurrent('')
+                                }}>Add</button>
+                            </div>
+                            {errors.skills&&<p className="cr-error">{errors.skills.message}</p>}
+                        </div>
+                        <div className="cr-field">
+                            <label className="cr-label">LinkedIn <span className="cr-optional">(optional)</span></label>
+                            <input type="url" {...register('linkedin',{setValueAs:(value)=>value===""?undefined:value})} className={`cr-input ${errors.linkedin?'cr-input-error':''}`} placeholder="https://linkedin.com/in/..."/>
+                            {errors.linkedin&&<p className="cr-error">{errors.linkedin.message}</p>}
+                        </div>
+                        <div className="cr-field">
+                            <label className="cr-label">Visibility</label>
+                            <div className="cr-visibility-toggle">
+                                <input type="radio" style={{display:"none"}} id="visibility-true" value="true" {...register('visibility')}/>
+                                <input type="radio" style={{display:"none"}} id="visibility-false" value="false" {...register('visibility')}/>
+                                <label htmlFor="visibility-true" className={`cr-visibility-btn ${visibility==='true'?'cr-visibility-selected':''}`}>Public</label>
+                                <label htmlFor="visibility-false" className={`cr-visibility-btn ${visibility==='false'?'cr-visibility-selected':''}`}>Private</label>
+                            </div>
+                            {errors.visibility&&<p className="cr-error">{errors.visibility.message}</p>}
+                        </div>
                     </div>
-                    {errors.skills?<p>{errors.skills.message}</p>:null}
-                    Linkedin(optional):<input type="url" {...register('linkedin',{
-                        setValueAs:(value)=>value===""?undefined:value
-                    })}/>
-                    {errors.linkedin?<p>{errors.linkedin.message}</p>:null}
-                    Visibility:
-                    <input type="radio" style={{display:"none"}} id="visibility-true"value="true"{...register('visibility')}/>
-                    <input type="radio" style={{display:"none"}} id="visibility-false"value="false"{...register('visibility')}/>
-                    <label htmlFor="visibility-true" className={visibility==='true'?'visbility-selected':''}>Public</label>
-                    <label htmlFor="visibility-false" className={visibility==='false'?'visbility-selected':''}>Private</label>
-                    {errors.visibility?<p>{errors.visibility.message}</p>:null}
-                </div>
-                :
-                null}
-                {section===2?
-                <div>
-                    {educationField.fields.map((field,index)=>(
-                        <div key={field.id}>
-                            <input {...register(`education.${index}.institution`)}/>
-                            <p>{errors.education?.[index]?.institution?.message||null}</p>
-                            <input {...register(`education.${index}.degree`)}/>
-                            <p>{errors.education?.[index]?.degree?.message||null}</p>
-                            <input type="date" {...register(`education.${index}.startDate`)}/>
-                            <p>{errors.education?.[index]?.startDate?.message}</p>
-                            <input type="date" {...register(`education.${index}.endDate`,{
-                                setValueAs:(val)=>val===''?undefined:val
-                            })}/>
-                            <p>{errors.education?.[index]?.endDate?.message}</p>
-                            <button type="button" onClick={()=>educationField.remove(index)}>🗑️</button>
-                            <p>{errors.education?.[index]?.message}</p>
-                        </div>
-                    ))}
-                    <button type="button" onClick={()=>educationField.append({
-                        institution:'',
-                        degree:'',
-                        startDate:'',
-                        endDate:''
-                    })}>+</button>
-                </div>
-                :
-                null}
-                {section===3?
-                <div>
-                    {experienceField.fields.map((field,index)=>(
-                        <div key={field.id}>
-                            <input {...register(`experience.${index}.company`)}/>
-                            <p>{errors.experience?.[index]?.company?.message||null}</p>
-                            <input {...register(`experience.${index}.role`)}/>
-                            <p>{errors.experience?.[index]?.role?.message||null}</p>
-                            <input type="date" {...register(`experience.${index}.startDate`)}/>
-                            <p>{errors.experience?.[index]?.startDate?.message}</p>
-                            <input type="date" {...register(`experience.${index}.endDate`,{
-                                setValueAs:(val)=>val===''?undefined:val
-                            })}/>
-                            <p>{errors.experience?.[index]?.endDate?.message}</p>
-                            <button type="button" onClick={()=>experienceField.remove(index)}>🗑️</button>
-                            <p>{errors.experience?.[index]?.message}</p>
-                        </div>
-                    ))}
-                    <button type="button" onClick={()=>experienceField.append({
-                        company:'',
-                        role:'',
-                        startDate:'',
-                        endDate:''
-                    })}>+</button>
-                </div>
-                :
-                null}
-                {section===4?
-                <div>
-                    {projectField.fields.map((field,index)=>(
-                        <div key={field.id}>
-                            <input {...register(`projects.${index}.name`)}/>
-                            <p>{errors.projects?.[index]?.name?.message||null}</p>
-                            <input {...register(`projects.${index}.description`)}/>
-                            <p>{errors.projects?.[index]?.description?.message||null}</p>
-                            <input {...register(`projects.${index}.deployedLink`,{
-                                setValueAs:(val)=>val===''?undefined:val
-                            })}/>
-                            <p>{errors.projects?.[index]?.deployedLink?.message}</p>
-                            <input {...register(`projects.${index}.sourceCode`,{
-                                setValueAs:(val)=>val===''?undefined:val
-                            })}/>
-                            <p>{errors.projects?.[index]?.sourceCode?.message}</p>
-                            <button type="button" onClick={()=>projectField.remove(index)}>🗑️</button>
-                            <p>{errors.projects?.[index]?.message}</p>
-                        </div>
-                    ))}
-                    <button type="button" onClick={()=>projectField.append({
-                        name:'',
-                        description:'',
-                        sourceCode:'',
-                        deployedLink:''
-                    })}>+</button>
-                </div>
-                :
-                null}
-                {section===5?
-                <div>
-                    {achievementField.fields.map((field,index)=>(
-                        <div key={field.id}>
-                            <input {...register(`achievements.${index}.name`)}/>
-                            <p>{errors.achievements?.[index]?.name?.message||null}</p>
-                            <input {...register(`achievements.${index}.description`)}/>
-                            <p>{errors.achievements?.[index]?.description?.message||null}</p>
-                            <button type="button" onClick={()=>achievementField.remove(index)}>🗑️</button>
-                            <p>{errors.achievements?.[index]?.message}</p>
-                        </div>
-                    ))}
-                    <button type="button" onClick={()=>achievementField.append({
-                        name:'',
-                        description:''
-                    })}>+</button>
-                </div>
-                :
-                null}
-                <button>Save</button>
-            </form>
+                    :null}
+                    {section===2?
+                    <div className="cr-section">
+                        <h3 className="cr-section-title">Education</h3>
+                        {educationField.fields.map((field,index)=>(
+                            <div key={field.id} className="cr-card">
+                                <div className="cr-card-header">
+                                    <span className="cr-card-index">#{index+1}</span>
+                                    <button type="button" className="cr-remove-btn" onClick={()=>educationField.remove(index)}>Remove</button>
+                                </div>
+                                <div className="cr-field">
+                                    <label className="cr-label">Institution</label>
+                                    <input {...register(`education.${index}.institution`)} className={`cr-input ${errors.education?.[index]?.institution?'cr-input-error':''}`} placeholder="University name"/>
+                                    {errors.education?.[index]?.institution&&<p className="cr-error">{errors.education?.[index]?.institution?.message}</p>}
+                                </div>
+                                <div className="cr-field">
+                                    <label className="cr-label">Degree <span className="cr-optional">(optional)</span></label>
+                                    <input {...register(`education.${index}.degree`)} className="cr-input" placeholder="e.g. BSc Computer Science"/>
+                                </div>
+                                <div className="cr-date-row">
+                                    <div className="cr-field">
+                                        <label className="cr-label">Start Date</label>
+                                        <input type="date" {...register(`education.${index}.startDate`)} className={`cr-input ${errors.education?.[index]?.startDate?'cr-input-error':''}`}/>
+                                        {errors.education?.[index]?.startDate&&<p className="cr-error">{errors.education?.[index]?.startDate?.message}</p>}
+                                    </div>
+                                    <div className="cr-field">
+                                        <label className="cr-label">End Date <span className="cr-optional">(optional)</span></label>
+                                        <input type="date" {...register(`education.${index}.endDate`,{setValueAs:(val)=>val===''?undefined:val})} className={`cr-input ${errors.education?.[index]?.endDate?'cr-input-error':''}`}/>
+                                        {errors.education?.[index]?.endDate&&<p className="cr-error">{errors.education?.[index]?.endDate?.message}</p>}
+                                    </div>
+                                </div>
+                                {errors.education?.[index]?.message&&<p className="cr-error">{errors.education?.[index]?.message}</p>}
+                            </div>
+                        ))}
+                        <button type="button" className="cr-append-btn" onClick={()=>educationField.append({institution:'',degree:'',startDate:'',endDate:''})}>+ Add Education</button>
+                    </div>
+                    :null}
+                    {section===3?
+                    <div className="cr-section">
+                        <h3 className="cr-section-title">Experience</h3>
+                        {experienceField.fields.map((field,index)=>(
+                            <div key={field.id} className="cr-card">
+                                <div className="cr-card-header">
+                                    <span className="cr-card-index">#{index+1}</span>
+                                    <button type="button" className="cr-remove-btn" onClick={()=>experienceField.remove(index)}>Remove</button>
+                                </div>
+                                <div className="cr-field">
+                                    <label className="cr-label">Company</label>
+                                    <input {...register(`experience.${index}.company`)} className={`cr-input ${errors.experience?.[index]?.company?'cr-input-error':''}`} placeholder="Company name"/>
+                                    {errors.experience?.[index]?.company&&<p className="cr-error">{errors.experience?.[index]?.company?.message}</p>}
+                                </div>
+                                <div className="cr-field">
+                                    <label className="cr-label">Role</label>
+                                    <input {...register(`experience.${index}.role`)} className={`cr-input ${errors.experience?.[index]?.role?'cr-input-error':''}`} placeholder="e.g. Software Engineer"/>
+                                    {errors.experience?.[index]?.role&&<p className="cr-error">{errors.experience?.[index]?.role?.message}</p>}
+                                </div>
+                                <div className="cr-date-row">
+                                    <div className="cr-field">
+                                        <label className="cr-label">Start Date</label>
+                                        <input type="date" {...register(`experience.${index}.startDate`)} className={`cr-input ${errors.experience?.[index]?.startDate?'cr-input-error':''}`}/>
+                                        {errors.experience?.[index]?.startDate&&<p className="cr-error">{errors.experience?.[index]?.startDate?.message}</p>}
+                                    </div>
+                                    <div className="cr-field">
+                                        <label className="cr-label">End Date <span className="cr-optional">(optional)</span></label>
+                                        <input type="date" {...register(`experience.${index}.endDate`,{setValueAs:(val)=>val===''?undefined:val})} className={`cr-input ${errors.experience?.[index]?.endDate?'cr-input-error':''}`}/>
+                                        {errors.experience?.[index]?.endDate&&<p className="cr-error">{errors.experience?.[index]?.endDate?.message}</p>}
+                                    </div>
+                                </div>
+                                {errors.experience?.[index]?.message&&<p className="cr-error">{errors.experience?.[index]?.message}</p>}
+                            </div>
+                        ))}
+                        <button type="button" className="cr-append-btn" onClick={()=>experienceField.append({company:'',role:'',startDate:'',endDate:''})}>+ Add Experience</button>
+                    </div>
+                    :null}
+                    {section===4?
+                    <div className="cr-section">
+                        <h3 className="cr-section-title">Projects</h3>
+                        {projectField.fields.map((field,index)=>(
+                            <div key={field.id} className="cr-card">
+                                <div className="cr-card-header">
+                                    <span className="cr-card-index">#{index+1}</span>
+                                    <button type="button" className="cr-remove-btn" onClick={()=>projectField.remove(index)}>Remove</button>
+                                </div>
+                                <div className="cr-field">
+                                    <label className="cr-label">Name</label>
+                                    <input {...register(`projects.${index}.name`)} className={`cr-input ${errors.projects?.[index]?.name?'cr-input-error':''}`} placeholder="Project name"/>
+                                    {errors.projects?.[index]?.name&&<p className="cr-error">{errors.projects?.[index]?.name?.message}</p>}
+                                </div>
+                                <div className="cr-field">
+                                    <label className="cr-label">Description</label>
+                                    <textarea {...register(`projects.${index}.description`)} className={`cr-textarea ${errors.projects?.[index]?.description?'cr-input-error':''}`} placeholder="What did you build?"/>
+                                    {errors.projects?.[index]?.description&&<p className="cr-error">{errors.projects?.[index]?.description?.message}</p>}
+                                </div>
+                                <div className="cr-field">
+                                    <label className="cr-label">Deployed Link <span className="cr-optional">(optional)</span></label>
+                                    <input {...register(`projects.${index}.deployedLink`,{setValueAs:(val)=>val===''?undefined:val})} className={`cr-input ${errors.projects?.[index]?.deployedLink?'cr-input-error':''}`} placeholder="https://..."/>
+                                    {errors.projects?.[index]?.deployedLink&&<p className="cr-error">{errors.projects?.[index]?.deployedLink?.message}</p>}
+                                </div>
+                                <div className="cr-field">
+                                    <label className="cr-label">Source Code <span className="cr-optional">(optional)</span></label>
+                                    <input {...register(`projects.${index}.sourceCode`,{setValueAs:(val)=>val===''?undefined:val})} className={`cr-input ${errors.projects?.[index]?.sourceCode?'cr-input-error':''}`} placeholder="https://github.com/..."/>
+                                    {errors.projects?.[index]?.sourceCode&&<p className="cr-error">{errors.projects?.[index]?.sourceCode?.message}</p>}
+                                </div>
+                            </div>
+                        ))}
+                        <button type="button" className="cr-append-btn" onClick={()=>projectField.append({name:'',description:'',sourceCode:'',deployedLink:''})}>+ Add Project</button>
+                    </div>
+                    :null}
+                    {section===5?
+                    <div className="cr-section">
+                        <h3 className="cr-section-title">Achievements</h3>
+                        {achievementField.fields.map((field,index)=>(
+                            <div key={field.id} className="cr-card">
+                                <div className="cr-card-header">
+                                    <span className="cr-card-index">#{index+1}</span>
+                                    <button type="button" className="cr-remove-btn" onClick={()=>achievementField.remove(index)}>Remove</button>
+                                </div>
+                                <div className="cr-field">
+                                    <label className="cr-label">Name</label>
+                                    <input {...register(`achievements.${index}.name`)} className={`cr-input ${errors.achievements?.[index]?.name?'cr-input-error':''}`} placeholder="Achievement title"/>
+                                    {errors.achievements?.[index]?.name&&<p className="cr-error">{errors.achievements?.[index]?.name?.message}</p>}
+                                </div>
+                                <div className="cr-field">
+                                    <label className="cr-label">Description</label>
+                                    <textarea {...register(`achievements.${index}.description`)} className={`cr-textarea ${errors.achievements?.[index]?.description?'cr-input-error':''}`} placeholder="Describe the achievement..."/>
+                                    {errors.achievements?.[index]?.description&&<p className="cr-error">{errors.achievements?.[index]?.description?.message}</p>}
+                                </div>
+                            </div>
+                        ))}
+                        <button type="button" className="cr-append-btn" onClick={()=>achievementField.append({name:'',description:''})}>+ Add Achievement</button>
+                    </div>
+                    :null}
+                    <div className="cr-footer">
+                        <button className="cr-submit-btn" disabled={mutation.isPending}>
+                            {mutation.isPending?<><span className="cr-spinner"/>Saving...</>:'Save Resume'}
+                        </button>
+                    </div>
+                </form>
+            </main>
         </div>
     )
 }
