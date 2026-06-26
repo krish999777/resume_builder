@@ -5,6 +5,7 @@ import Signup from './pages/Signup'
 import ProtectedRoute from './components/ProtectedRoute'
 import Resume from './pages/Resume'
 import CreateResume from './pages/CreateResume'
+import EditResume from './pages/EditResume'
 
 export default function App(){
   return(
@@ -21,6 +22,11 @@ export default function App(){
         <Route path='/resume/create' element={
           <ProtectedRoute role='candidate'>
             <CreateResume/>
+          </ProtectedRoute>
+        }/>
+        <Route path='/resume/edit' element={
+          <ProtectedRoute role='candidate'>
+            <EditResume/>
           </ProtectedRoute>
         }/>
       </Routes>

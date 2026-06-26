@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type {PostResumeType} from '../components/ResumeForm'
+import type {PostResumeType,PutResumeType} from '../components/ResumeForm'
 
 const api=axios.create({
     baseURL:import.meta.env.VITE_BACKEND_URL||'http://localhost:8000',
@@ -38,59 +38,61 @@ export async function getMe(){
     }
 }
 
+export type getResumeType={
+    id: number;
+    title: string;
+    summary: string;
+    linkedin: string | null;
+    skills: string[];
+    visibility: boolean;
+    userId: number;
+    user: {
+        id: number;
+        name: string;
+        role: 'candidate'|'recruiter';
+        email: string;
+        password: string;
+        profilePublicId: string | null;
+        profileUrl: string;
+    },
+    achievements: {
+        name: string;
+        id: number;
+        description: string;
+        resumeId: number;
+    }[],
+    projects: {
+        name: string;
+        id: number;
+        description: string;
+        sourceCode: string | null;
+        deployedLink: string | null;
+        resumeId: number;
+    }[],
+    education: {
+        id: number;
+        institution: string;
+        degree: string | null;
+        startDate: Date;
+        endDate: Date | null;
+        resumeId: number;
+    }[],
+    experience: {
+        role: string;
+        id: number;
+        startDate: Date;
+        endDate: Date | null;
+        company: string;
+        resumeId: number;
+    }[]
+}
+
 export async function getResume(){
     try{
         const res=await api.get('/resume')
         return res.data as {
             message:string,
-            data:{
-                id: number;
-                title: string;
-                summary: string;
-                linkedin: string | null;
-                skills: string[];
-                visibility: boolean;
-                userId: number;
-                user: {
-                    id: number;
-                    name: string;
-                    role: 'candidate'|'recruiter';
-                    email: string;
-                    password: string;
-                    profilePublicId: string | null;
-                    profileUrl: string;
-                },
-                achievements: {
-                    name: string;
-                    id: number;
-                    description: string;
-                    resumeId: number;
-                }[],
-                projects: {
-                    name: string;
-                    id: number;
-                    description: string;
-                    sourceCode: string | null;
-                    deployedLink: string | null;
-                    resumeId: number;
-                }[],
-                education: {
-                    id: number;
-                    institution: string;
-                    degree: string | null;
-                    startDate: Date;
-                    endDate: Date | null;
-                    resumeId: number;
-                }[],
-                experience: {
-                    role: string;
-                    id: number;
-                    startDate: Date;
-                    endDate: Date | null;
-                    company: string;
-                    resumeId: number;
-                }[]
-            }|null
+            data:getResumeType|null
         }
     }catch(err:any){
         throw new Error(err.response?.data?.error||'Unknown error')
@@ -108,6 +110,15 @@ export async function postLogout(){
     try{
 
         const res=await api.post('/auth/logout')
+        return res.data
+    }catch(err:any){
+        throw new Error(err.response?.data?.error||'Unknown error')
+    }
+}
+
+export async function putResume(body:PutResumeType){
+    try{
+        const res=await api.put('/resume',body)
         return res.data
     }catch(err:any){
         throw new Error(err.response?.data?.error||'Unknown error')
