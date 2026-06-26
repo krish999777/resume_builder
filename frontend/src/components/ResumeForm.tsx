@@ -4,10 +4,11 @@ import {useState} from 'react'
 import {useFieldArray,useForm} from 'react-hook-form'
 import type { SubmitHandler } from 'react-hook-form'
 import {zodResolver} from '@hookform/resolvers/zod'
-import {postResume} from '../utils/api'
+import {postResume,putResume} from '../utils/api'
 import {useMutation,useQueryClient} from '@tanstack/react-query'
 import {useNavigate} from 'react-router-dom'
 import toast from 'react-hot-toast'
+import type {getResumeType} from '../utils/api'
 
 const AchievementSchema=z.object({
     name:z.string().trim().min(1,{
@@ -72,10 +73,29 @@ const ResumeSchema=z.object({
     experience:z.array(ExperienceSchema).default([]),
 })
 
+const EditResumeSchema=ResumeSchema.safeExtend({
+    achievements:z.array(AchievementSchema.safeExtend({
+        id:z.int().min(1).optional()
+    })).default([]),
+    projects:z.array(ProjectSchema.safeExtend({
+        id:z.int().min(1).optional()
+    })).default([]),
+    education:z.array(EducationSchema.safeExtend({
+        id:z.int().min(1).optional()
+    })).default([]),
+    experience:z.array(ExperienceSchema.safeExtend({
+        id:z.int().min(1).optional()
+    })).default([])
+})
+
 export type PostResumeType=z.infer<typeof ResumeSchema>
+export type PutResumeType=z.infer<typeof EditResumeSchema>
 
 
-export default function ResumeForm(){
+export default function ResumeForm({existingData,mode}:{
+    existingData?:getResumeType,
+    mode:'create'|'edit'
+}){
     const [section,setSection]=useState<1|2|3|4|5>(1)
     const [skillCurrent,setSkillCurrent]=useState<string>('')
 
@@ -83,20 +103,54 @@ export default function ResumeForm(){
     const queryClient=useQueryClient()
 
     const mutation=useMutation({
-        mutationFn:postResume,
+        mutationFn:mode==='create'?postResume:putResume,
         onSuccess:(data)=>{
-            queryClient.resetQueries({queryKey:['resume']})
+            queryClient.invalidateQueries({queryKey:['resume']})
             toast.success(data.message)
             navigate('/resume')
         },
         onError:(err)=>toast.error(err.message)
     })
 
+    
+
     const {control,register,handleSubmit,formState:{errors},setValue,watch}=useForm({
-        resolver:zodResolver(ResumeSchema),
-        defaultValues:{
+        resolver:zodResolver(mode==='create'?ResumeSchema:EditResumeSchema),
+        defaultValues:mode==='create'?{
             skills:[],
             visibility:"true"
+        }:{
+            title:existingData!.title,
+            summary:existingData!.summary,
+            skills:existingData!.skills,
+            linkedin:existingData!.linkedin||undefined,
+            visibility:existingData!.visibility?'true':'false',
+            education: existingData!.education.map(e => ({
+                id: e.id,
+                institution: e.institution,
+                degree: e.degree ?? '',
+                startDate: new Date(e.startDate).toISOString().split('T')[0],
+                endDate:e.endDate ? new Date(e.endDate).toISOString().split('T')[0] : undefined
+            })),
+            experience: existingData!.experience.map(e => ({
+                id: e.id,
+                company: e.company,
+                role: e.role,
+                startDate: new Date(e.startDate).toISOString().split('T')[0],
+                endDate: e.endDate ? new Date(e.endDate).toISOString().split('T')[0] : undefined
+            })),
+            projects: existingData!.projects.map(p => ({
+                id: p.id,
+                name: p.name,
+                description: p.description,
+                sourceCode: p.sourceCode ?? '',
+                deployedLink: p.deployedLink ?? ''
+            })),
+            achievements: existingData!.achievements.map(a => ({
+                id: a.id,
+                name: a.name,
+                description: a.description
+            }))
         }
     })
     const educationField=useFieldArray({
@@ -115,22 +169,28 @@ export default function ResumeForm(){
         control,
         name:'achievements'
     })
-    const onSubmit:SubmitHandler<PostResumeType>=(data)=>{
+    const onSubmit:SubmitHandler<PostResumeType|PutResumeType>=(data)=>{
         mutation.mutate(data)
     }
     const skills=watch('skills')
     const visibility=watch('visibility')
+
+    const isErrorPrimary=errors.linkedin||errors.title||errors.summary||errors.visibility||errors.skills
+    const isErrorEducation=errors.education
+    const isErrorExperience=errors.experience
+    const isErrorProjects=errors.projects
+    const isErrorAchievements=errors.achievements
 
     return(
         <div className="cr-wrap">
             <aside className="cr-sidebar">
                 <h2 className="cr-sidebar-title">Create Resume</h2>
                 <nav className="cr-nav">
-                    <button type="button" className={`cr-nav-btn ${section===1?'cr-nav-btn-active':''}`} onClick={()=>setSection(1)}>Primary</button>
-                    <button type="button" className={`cr-nav-btn ${section===2?'cr-nav-btn-active':''}`} onClick={()=>setSection(2)}>Education</button>
-                    <button type="button" className={`cr-nav-btn ${section===3?'cr-nav-btn-active':''}`} onClick={()=>setSection(3)}>Experience</button>
-                    <button type="button" className={`cr-nav-btn ${section===4?'cr-nav-btn-active':''}`} onClick={()=>setSection(4)}>Projects</button>
-                    <button type="button" className={`cr-nav-btn ${section===5?'cr-nav-btn-active':''}`} onClick={()=>setSection(5)}>Achievements</button>
+                    <button type="button" className={`cr-nav-btn ${section===1?'cr-nav-btn-active':''} ${isErrorPrimary ?'cr-nav-has-error':''}`} onClick={()=>setSection(1)}>Primary</button>
+                    <button type="button" className={`cr-nav-btn ${section===2?'cr-nav-btn-active':''} ${isErrorEducation ?'cr-nav-has-error':''}`} onClick={()=>setSection(2)}>Education</button>
+                    <button type="button" className={`cr-nav-btn ${section===3?'cr-nav-btn-active':''} ${isErrorExperience ?'cr-nav-has-error':''}`} onClick={()=>setSection(3)}>Experience</button>
+                    <button type="button" className={`cr-nav-btn ${section===4?'cr-nav-btn-active':''} ${isErrorProjects ?'cr-nav-has-error':''}`} onClick={()=>setSection(4)}>Projects</button>
+                    <button type="button" className={`cr-nav-btn ${section===5?'cr-nav-btn-active':''} ${isErrorAchievements ?'cr-nav-has-error':''}`} onClick={()=>setSection(5)}>Achievements</button>
                 </nav>
             </aside>
             <main className="cr-main">
@@ -324,6 +384,7 @@ export default function ResumeForm(){
                     </div>
                     :null}
                     <div className="cr-footer">
+                        {mode==='edit'&&<button type="button" className="cr-cancel-btn" disabled={mutation.isPending} onClick={()=>navigate('/resume')}>Cancel</button>}
                         <button className="cr-submit-btn" disabled={mutation.isPending}>
                             {mutation.isPending?<><span className="cr-spinner"/>Saving...</>:'Save Resume'}
                         </button>

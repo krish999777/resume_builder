@@ -296,8 +296,33 @@
 }
 
 .cr-footer {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
     padding-top: 1rem;
     border-top: 1px solid #e5e7eb;
+}
+
+.cr-cancel-btn {
+    padding: 0.6rem 1.75rem;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    color: #374151;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.cr-cancel-btn:hover:not(:disabled) {
+    background: #f3f4f6;
+    border-color: #d1d5db;
+}
+
+.cr-cancel-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .cr-submit-btn {
@@ -335,4 +360,18 @@
 
 @keyframes spin {
     to { transform: rotate(360deg); }
+}
+.cr-nav-has-error {
+    color: #dc2626;
+}
+
+.cr-nav-has-error::after {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #dc2626;
+    margin-left: 0.5rem;
+    vertical-align: middle;
 }
