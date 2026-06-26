@@ -4,6 +4,10 @@ import type { SubmitHandler } from 'react-hook-form'
 import * as z from 'zod'
 import {zodResolver} from '@hookform/resolvers/zod'
 import {useState} from 'react'
+import {postResume} from '../utils/api'
+import {useMutation,useQueryClient} from '@tanstack/react-query'
+import {useNavigate} from 'react-router-dom'
+import toast from 'react-hot-toast'
 
 const AchievementSchema=z.object({
     name:z.string().trim().min(1,{
@@ -68,11 +72,24 @@ const ResumeSchema=z.object({
     experience:z.array(ExperienceSchema).default([]),
 })
 
-type InputType=z.infer<typeof ResumeSchema>
+export type PostResumeType=z.infer<typeof ResumeSchema>
 
 export default function CreateResume(){
     const [section,setSection]=useState<1|2|3|4|5>(1)
     const [skillCurrent,setSkillCurrent]=useState<string>('')
+
+    const navigate=useNavigate()
+    const queryClient=useQueryClient()
+
+    const mutation=useMutation({
+        mutationFn:postResume,
+        onSuccess:(data)=>{
+            queryClient.resetQueries({queryKey:['resume']})
+            toast.success(data.message)
+            navigate('/resume')
+        },
+        onError:(err)=>toast.error(err.message)
+    })
 
     const {control,register,handleSubmit,formState:{errors},setValue,watch}=useForm({
         resolver:zodResolver(ResumeSchema),
@@ -97,7 +114,9 @@ export default function CreateResume(){
         control,
         name:'achievements'
     })
-    const onSubmit:SubmitHandler<InputType>=(data)=>console.log(data)
+    const onSubmit:SubmitHandler<PostResumeType>=(data)=>{
+        mutation.mutate(data)
+    }
     const skills=watch('skills')
     const visibility=watch('visibility')
 

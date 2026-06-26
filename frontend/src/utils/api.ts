@@ -1,4 +1,5 @@
 import axios from 'axios'
+import type {PostResumeType} from '../pages/CreateResume'
 
 const api=axios.create({
     baseURL:import.meta.env.VITE_BACKEND_URL||'http://localhost:8000',
@@ -91,6 +92,14 @@ export async function getResume(){
                 }[]
             }|null
         }
+    }catch(err:any){
+        throw new Error(err.response?.data?.error||'Unknown error')
+    }
+}
+export async function postResume(body:PostResumeType){
+    try{
+        const res=await api.post('/resume',body)
+        return res.data as {message:string}
     }catch(err:any){
         throw new Error(err.response?.data?.error||'Unknown error')
     }
