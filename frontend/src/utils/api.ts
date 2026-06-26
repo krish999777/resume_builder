@@ -104,3 +104,12 @@ export async function postResume(body:PostResumeType){
         throw new Error(err.response?.data?.error||'Unknown error')
     }
 }
+export async function postLogout(){
+    try{
+
+        const res=await api.post('/auth/logout')
+        return res.data
+    }catch(err:any){
+        throw new Error(err.response?.data?.error||'Unknown error')
+    }
+}

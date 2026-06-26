@@ -1,5 +1,8 @@
 import './Navbar.css'
-import { NavLink } from 'react-router-dom'
+import { NavLink,useNavigate } from 'react-router-dom'
+import {postLogout} from '../utils/api'
+import {useMutation,useQueryClient} from '@tanstack/react-query'
+import toast from 'react-hot-toast'
 
 export default function Navbar({ userData }: {
     userData: {
@@ -9,6 +12,16 @@ export default function Navbar({ userData }: {
         profileUrl: string
     }
 }) {
+    const queryClient=useQueryClient()
+    const navigate=useNavigate()
+    const mutation=useMutation({
+        mutationFn:postLogout,
+        onSuccess:()=>{
+            queryClient.resetQueries({queryKey:['me']})
+            toast.success("Logged out successfully")
+            navigate('/login')
+        }
+    })
     return (
         <nav className="navbar">
             <div className="navbar-brand">
@@ -25,7 +38,9 @@ export default function Navbar({ userData }: {
             <div className="navbar-user">
                 <img src={userData.profileUrl} alt={userData.name} className="navbar-avatar" />
                 <span className="navbar-username">{userData.name}</span>
-                <button className="navbar-logout-btn" onClick={() => {}}>Logout</button>
+                <button className="navbar-logout-btn" onClick={() => {
+                    mutation.mutate()
+                }}>Logout</button>
             </div>
         </nav>
     )
