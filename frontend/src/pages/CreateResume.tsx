@@ -93,6 +93,10 @@ export default function CreateResume(){
         control,
         name:'projects'
     })
+    const achievementField=useFieldArray({
+        control,
+        name:'achievements'
+    })
     const onSubmit:SubmitHandler<InputType>=(data)=>console.log(data)
     const skills=watch('skills')
     const visibility=watch('visibility')
@@ -225,7 +229,25 @@ export default function CreateResume(){
                 </div>
                 :
                 null}
-                {section===5?<div></div>:null}
+                {section===5?
+                <div>
+                    {achievementField.fields.map((field,index)=>(
+                        <div key={field.id}>
+                            <input {...register(`achievements.${index}.name`)}/>
+                            <p>{errors.achievements?.[index]?.name?.message||null}</p>
+                            <input {...register(`achievements.${index}.description`)}/>
+                            <p>{errors.achievements?.[index]?.description?.message||null}</p>
+                            <button type="button" onClick={()=>achievementField.remove(index)}>🗑️</button>
+                            <p>{errors.achievements?.[index]?.message}</p>
+                        </div>
+                    ))}
+                    <button type="button" onClick={()=>achievementField.append({
+                        name:'',
+                        description:''
+                    })}>+</button>
+                </div>
+                :
+                null}
                 <button>Save</button>
             </form>
         </div>
