@@ -2,7 +2,7 @@ import './Profile.css'
 import useMe from '../hooks/useMe'
 import LoadingSpinner from '../components/LoadingSpinner'
 import {useForm} from 'react-hook-form'
-import {putProfile} from '../utils/api'
+import {putProfile,deleteProfile} from '../utils/api'
 import {useMutation,useQueryClient} from '@tanstack/react-query'
 import type { SubmitHandler } from 'react-hook-form'
 import toast from 'react-hot-toast'
@@ -19,11 +19,22 @@ export default function Profile(){
     const mutation=useMutation({
         mutationFn:putProfile,
         onSuccess:()=>{
-            toast.success('Profile updated successfully')
+            toast.success('Profile photo updated successfully')
             queryClient.invalidateQueries({queryKey:['me']})
             setIsEditing(false)
         },
         onError:(err)=>toast.error(err.message)
+    })
+    const deleteMutation=useMutation({
+        mutationFn:deleteProfile,
+        onSuccess:()=>{
+            toast.success('Profile photo deleted successfully')
+            queryClient.invalidateQueries({queryKey:['me']})
+            setIsEditing(false)
+        },
+        onError:(err)=>{
+            toast.error(err.message)
+        }
     })
     if(isPending){
         return <LoadingSpinner/>
@@ -51,7 +62,7 @@ export default function Profile(){
                     </div>
                 </div>
                 <div className="profile-actions">
-                    {!data.isDefault&&<button className="profile-delete-btn" onClick={()=>console.log('delete btn')}>Remove Photo</button>}
+                    {!data.isDefault&&<button className="profile-delete-btn" onClick={()=>deleteMutation.mutate()}>Remove Photo</button>}
                     <button className="profile-edit-btn" onClick={()=>setIsEditing(prev=>!prev)}>{isEditing?'Cancel':'Change Photo'}</button>
                 </div>
                 {isEditing&&(

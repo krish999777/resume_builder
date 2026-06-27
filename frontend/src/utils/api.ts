@@ -142,3 +142,11 @@ export async function putProfile(body:FormData){
         throw new Error(err.response?.data?.error||'Unknown error')
     }
 }
+
+export async function deleteProfile(){
+    try{
+        await api.delete('/profile')
+    }catch(err:any){
+        throw new Error(err.response?.data?.error||'Unknown error')
+    }
+}
