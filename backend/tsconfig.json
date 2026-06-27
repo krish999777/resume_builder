@@ -2,8 +2,8 @@
   "compilerOptions": {
     "types": ["node"],
     "outDir":"./dist",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
+    "module": "CommonJS",
+    "moduleResolution": "node",
     "target": "ES2023",
     "strict": true,
     "esModuleInterop": true,
