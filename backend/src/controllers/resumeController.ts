@@ -219,7 +219,8 @@ export async function getEachResumeController(req:Request,res:Response){
                 achievements:true,
                 projects:true,
                 experience:true,
-                education:true
+                education:true,
+                user:true
             }
         })
         if(!resume){
@@ -227,6 +228,7 @@ export async function getEachResumeController(req:Request,res:Response){
         }
         return res.status(200).json({message:"Resume found",data:resume})
     }catch(err){
+        console.log(err)
         return res.status(500).json({error:"Internal server error"})
     }
 }
