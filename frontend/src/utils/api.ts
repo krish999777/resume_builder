@@ -150,3 +150,38 @@ export async function deleteProfile(){
         throw new Error(err.response?.data?.error||'Unknown error')
     }
 }
+
+export async function getResumes({search,sort,page}:{
+    search:string,
+    sort:null|'skill'|'creation',
+    page:number
+}){
+    let query=''
+    if(search){
+        query+=`search=${search}`
+    }
+    if(sort){
+        query+=`${query?'&':''}sort=${sort}`
+    }
+    if(page){
+        query+=`${query?'&':''}page=${page}`
+    }
+    console.log(query)
+    try{
+        const res=await api.get(`/resume?${query}`)
+        return res.data as {
+            message:string,
+            data:{
+                title:string,
+                summary:string,
+                skills:string[],
+                userId:number,
+                name:string,
+            }[]
+            page:number,
+            totalPages:number
+        }
+    }catch(err:any){
+        throw new Error(err.response?.data?.error||'Unknown error')
+    }
+}

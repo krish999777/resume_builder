@@ -8,6 +8,7 @@ import CreateResume from './pages/CreateResume'
 import EditResume from './pages/EditResume'
 import ExportResume from './pages/ExportResume'
 import Profile from './pages/Profile'
+import Resumes from './pages/Resumes'
 
 export default function App(){
   return(
@@ -39,6 +40,11 @@ export default function App(){
         <Route path='/profile' element={
           <ProtectedRoute>
             <Profile/>
+          </ProtectedRoute>
+        }/>
+        <Route path='/resumes' element={
+          <ProtectedRoute role='recruiter'>
+            <Resumes/>
           </ProtectedRoute>
         }/>
       </Routes>
