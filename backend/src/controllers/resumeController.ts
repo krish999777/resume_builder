@@ -157,7 +157,7 @@ export async function getResumeController(req:Request<unknown,unknown,unknown,{
                     `
                 }else{
                     queryMerged+=`
-                        ORDER BY ARRAY_LENGTH(skills,1) DESC
+                        ORDER BY COALESCE(ARRAY_LENGTH(skills,1), 0) DESC
                     `
                 }
             }
