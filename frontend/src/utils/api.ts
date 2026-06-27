@@ -166,7 +166,6 @@ export async function getResumes({search,sort,page}:{
     if(page){
         query+=`${query?'&':''}page=${page}`
     }
-    console.log(query)
     try{
         const res=await api.get(`/resume?${query}`)
         return res.data as {
@@ -180,6 +179,17 @@ export async function getResumes({search,sort,page}:{
             }[]
             page:number,
             totalPages:number
+        }
+    }catch(err:any){
+        throw new Error(err.response?.data?.error||'Unknown error')
+    }
+}
+export async function getResumeById(id:number){
+    try{
+        const res=await api.get(`/resume/${id}`)
+        return res.data as {
+            message:string,
+            data:getResumeType|null
         }
     }catch(err:any){
         throw new Error(err.response?.data?.error||'Unknown error')
