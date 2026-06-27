@@ -4,6 +4,7 @@ import {useNavigate} from 'react-router-dom'
 import {getResume,deleteResume} from '../utils/api'
 import LoadingSpinner from '../components/LoadingSpinner'
 import toast from 'react-hot-toast'
+import ErrorMessage from '../components/ErrorMessage'
 
 export default function Resume(){
     const navigate=useNavigate()
@@ -29,14 +30,7 @@ export default function Resume(){
         return <LoadingSpinner/>
     }
     if(error||!data){
-        return(
-            <div className="resume-error-wrap">
-                <div className="resume-error-icon">⚠️</div>
-                <h2 className="resume-error-title">Something went wrong</h2>
-                <p className="resume-error-message">{error instanceof Error ? error.message : 'Failed to load resume'}</p>
-                <button className="resume-error-retry" onClick={()=>window.location.reload()}>Try Again</button>
-            </div>
-        )
+        return <ErrorMessage message={error?error.message:'Unknown error'}/>
     }
     if(!data.data){
         return(

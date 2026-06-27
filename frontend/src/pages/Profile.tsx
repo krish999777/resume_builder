@@ -7,6 +7,7 @@ import {useMutation,useQueryClient} from '@tanstack/react-query'
 import type { SubmitHandler } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import {useState} from 'react'
+import ErrorMessage from '../components/ErrorMessage'
 
 type Input={profile:FileList}
 
@@ -40,9 +41,7 @@ export default function Profile(){
         return <LoadingSpinner/>
     }
     if(!data||error){
-        return (
-            <div>{error.message}</div>//how is ts not throwing error. Anyways its good
-        )
+        return <ErrorMessage message={error?error.message:'Unknown error'}/>
     }
 
     const onSubmit:SubmitHandler<Input>=(data:Input)=>{

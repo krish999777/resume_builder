@@ -1,0 +1,44 @@
+.error-page-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: calc(100vh - 64px);
+    gap: 0.75rem;
+    text-align: center;
+    padding: 2rem;
+}
+
+.error-page-icon {
+    font-size: 2.5rem;
+}
+
+.error-page-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+}
+
+.error-page-message {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.error-page-retry {
+    margin-top: 0.5rem;
+    padding: 0.5rem 1.25rem;
+    border-radius: 8px;
+    border: none;
+    background: #2563eb;
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.error-page-retry:hover {
+    background: #1d4ed8;
+}

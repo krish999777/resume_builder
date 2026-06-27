@@ -5,6 +5,7 @@ import {getResumes} from '../utils/api'
 import LoadingSpinner from '../components/LoadingSpinner'
 import {useNavigate} from 'react-router-dom'
 import { useDebounce } from 'use-debounce'
+import ErrorMessage from '../components/ErrorMessage'
 
 export default function Resumes(){
     const [search,setSearch]=useState<string>('')
@@ -24,9 +25,7 @@ export default function Resumes(){
         queryKey:['resumes',debouncedSearch,sort,page]
     })
     if(error){
-        return(
-            <div>{error.message}</div>
-        )
+        return <ErrorMessage message={error?error.message:'Unknown error'}/>
     }
 
     function handleSelectChange(e:any){

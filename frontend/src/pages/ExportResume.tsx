@@ -3,6 +3,7 @@ import type {getResumeType} from '../utils/api'
 import { getResume } from '../utils/api'
 import {useQuery} from '@tanstack/react-query'
 import LoadingSpinner from '../components/LoadingSpinner'
+import ErrorMessage from '../components/ErrorMessage'
 
 const styles=StyleSheet.create({
   page: {
@@ -347,11 +348,7 @@ export default function ExportResume(){
         return <LoadingSpinner/>
     }
     if(error||!data||!data.data){
-        return(
-            <div>
-                {error?error.message:'Unknown error'}
-            </div>
-        )
+        return <ErrorMessage message={error?error.message:'Unknown error'}/>
     }
     return (
         <PDFViewer style={{
