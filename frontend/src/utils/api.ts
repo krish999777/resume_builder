@@ -31,7 +31,8 @@ export async function getMe(){
             id:number,
             role:'recruiter'|'candidate',
             name:string,
-            profileUrl:string
+            profileUrl:string,
+            isDefault:boolean
         } 
     }catch(err:any){
         throw new Error(err.response?.data?.error||'Unknown error')
@@ -128,6 +129,15 @@ export async function putResume(body:PutResumeType){
 export async function deleteResume(){
     try{
         await api.delete('/resume')
+    }catch(err:any){
+        throw new Error(err.response?.data?.error||'Unknown error')
+    }
+}
+
+export async function putProfile(body:FormData){
+    try{
+        const res=await api.put('/profile',body)
+        return res.data
     }catch(err:any){
         throw new Error(err.response?.data?.error||'Unknown error')
     }
