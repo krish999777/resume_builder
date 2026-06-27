@@ -128,7 +128,7 @@ export default function ResumeForm({existingData,mode}:{
             education: existingData!.education.map(e => ({
                 id: e.id,
                 institution: e.institution,
-                degree: e.degree ?? '',
+                degree: e.degree ?? undefined,
                 startDate: new Date(e.startDate).toISOString().split('T')[0],
                 endDate:e.endDate ? new Date(e.endDate).toISOString().split('T')[0] : undefined
             })),
@@ -143,8 +143,8 @@ export default function ResumeForm({existingData,mode}:{
                 id: p.id,
                 name: p.name,
                 description: p.description,
-                sourceCode: p.sourceCode ?? '',
-                deployedLink: p.deployedLink ?? ''
+                sourceCode: p.sourceCode ?? undefined,
+                deployedLink: p.deployedLink ?? undefined
             })),
             achievements: existingData!.achievements.map(a => ({
                 id: a.id,

@@ -6,6 +6,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import Resume from './pages/Resume'
 import CreateResume from './pages/CreateResume'
 import EditResume from './pages/EditResume'
+import ExportResume from './pages/ExportResume'
 
 export default function App(){
   return(
@@ -27,6 +28,11 @@ export default function App(){
         <Route path='/resume/edit' element={
           <ProtectedRoute role='candidate'>
             <EditResume/>
+          </ProtectedRoute>
+        }/>
+        <Route path='/resume/export' element={
+          <ProtectedRoute role='candidate'>
+            <ExportResume/>
           </ProtectedRoute>
         }/>
       </Routes>
