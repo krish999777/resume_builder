@@ -72,6 +72,6 @@ export async function meController(req:Request,res:Response){
         role:req.role,
         name:user.name,
         profileUrl:user.profileUrl,
-        isDefault:user.profileUrl?false:true
+        isDefault:user.profilePublicId?false:true
     })
 }
