@@ -62,10 +62,16 @@ export async function meController(req:Request,res:Response){
     const id=req.id
     const user=await prisma.user.findUnique({
         where:{id},
-        select:{name:true,profileUrl:true}
+        select:{name:true,profileUrl:true,profilePublicId:true}
     })
     if(!user){
         return res.status(404).json({error:"User not found"})
     }
-    return res.status(200).json({id,role:req.role,name:user.name,profileUrl:user.profileUrl})
+    return res.status(200).json({
+        id,
+        role:req.role,
+        name:user.name,
+        profileUrl:user.profileUrl,
+        isDefault:user.profileUrl?false:true
+    })
 }
