@@ -1,4 +1,4 @@
-import {BrowserRouter,Routes,Route} from 'react-router-dom'
+import {BrowserRouter,Routes,Route,Navigate} from 'react-router-dom'
 import Root from './pages/Root'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
@@ -53,6 +53,7 @@ export default function App(){
             <EachResume/>
           </ProtectedRoute>
         }/>
+        <Route path='*' element={<Navigate to='/'/>}/>
       </Routes>
     </BrowserRouter>
   )

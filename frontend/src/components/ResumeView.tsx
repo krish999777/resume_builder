@@ -21,7 +21,7 @@ export default function ResumeView({id}:{id?:number}){
         onSuccess:()=>{
             toast.success('Deleted resume successfuly')
             queryClient.invalidateQueries({
-                queryKey:['resume']
+                queryKey:userData!.role==='candidate'?['resume']:['resume',id]
             })
         },
         onError:()=>{
