@@ -13,7 +13,7 @@ export default function ResumeView({id}:{id?:number}){
     const queryClient=useQueryClient()
     const {data,isPending,error}=useQuery({
         queryFn:userData!.role==='candidate'?getResume:()=>getResumeById(id!),
-        queryKey:['resume'],
+        queryKey:userData!.role==='candidate'?['resume']:['resume',id],
         
     })
     const deleteMutation=useMutation({
