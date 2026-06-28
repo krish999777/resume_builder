@@ -4,7 +4,7 @@ A full-stack resume builder web app where candidates can create, edit, and expor
 
 ## Live Demo
 
-[ResumeHub](https://resume-builder-ibozsstn7-krishcshah09-1630s-projects.vercel.app/)
+[ResumeHub](https://resume-builder-eight-lilac.vercel.app/)
 
 ## Screenshots
 
