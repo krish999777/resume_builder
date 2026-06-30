@@ -81,3 +81,46 @@ export async function getConversation(req:Request,res:Response){
         return res.status(500).json({error:"Internal server error"})
     }
 }
+
+export async function getEachConversation(req:Request,res:Response){
+    const userId=req.id!
+    const paramsId=req.params.id
+    const result=z.coerce.bigint().safeParse(paramsId)
+    if(!result.success){
+        return res.status(400).json({error:"Id must be a a valid number"})
+    }
+    const id=Number(result.data)
+    try{
+        const messages=await prisma.conversation.findUnique({
+            where:{id,OR:[{candidateId:userId},{recruiterId:userId}]},
+            select:{
+                messages:{
+                    select:{
+                        message:true,
+                        sentAt:true,
+                        sender:{
+                            select:{
+                                name:true,
+                                profileUrl:true
+                            }
+                        }
+                    },
+                    orderBy:{sentAt:'asc'}
+                }
+            }
+        })
+        if(!messages){
+            return res.status(404).json({error:"Conversation not found"})
+        }
+        const flattenedMessages=messages.messages.map(mes=>({
+            message:mes.message,
+            sentAt:mes.sentAt,
+            name:mes.sender.name,
+            profileUrl:mes.sender.profileUrl
+        }))
+        return res.status(200).json({data:flattenedMessages})
+    }catch(err){
+        console.log(err)
+        res.status(500).json({error:"Internal server error"})
+    }
+}
