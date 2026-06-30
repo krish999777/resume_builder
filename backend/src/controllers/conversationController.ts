@@ -40,3 +40,44 @@ export async function postConversation(req:Request,res:Response){
         return res.status(500).json({error:'Internal server error'})
     }
 }
+
+export async function getConversation(req:Request,res:Response){
+    const id=req.id!
+    const role=req.role!
+    try{
+        if (role === 'candidate') {
+            const user = await prisma.user.findUnique({
+                where: { id },
+                select: {
+                    conversationsAsCandidate: {
+                        select: { recruiter: { select: { name: true } }, lastMessagedAt: true }
+                    }
+                }
+            })
+            if (!user) return res.status(400).json({error: "User not found"})
+            const data = user.conversationsAsCandidate.map(conv => ({
+                name: conv.recruiter.name,
+                lastMessagedAt: conv.lastMessagedAt
+            }))
+            return res.status(200).json({data})
+        }
+
+        const user = await prisma.user.findUnique({
+            where: { id },
+            select: {
+                conversationsAsRecruiter: {
+                    select: { candidate: { select: { name: true } }, lastMessagedAt: true }
+                }
+            }
+        })
+        if (!user) return res.status(400).json({error: "User not found"})
+        const data = user.conversationsAsRecruiter.map(conv => ({
+            name: conv.candidate.name,
+            lastMessagedAt: conv.lastMessagedAt
+        }))
+        return res.status(200).json({data})
+    }catch(err){
+        console.log(err)
+        return res.status(500).json({error:"Internal server error"})
+    }
+}
