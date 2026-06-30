@@ -28,7 +28,7 @@ model User{
   profileUrl String @default("https://res.cloudinary.com/dls73n4ig/image/upload/v1782037910/resume_builder/profile/default.jpg")
   conversationsAsCandidate Conversation[] @relation("CandidateConversations")
   conversationsAsRecruiter Conversation[] @relation("RecruiterConversations")
-  chats Chat[]
+  messages Message[]
   @@map("users")
 }
 model Education{
@@ -94,13 +94,13 @@ model Conversation{
   recruiterId Int
   candidate User @relation("CandidateConversations", fields: [candidateId], references: [id])
   recruiter User @relation("RecruiterConversations", fields: [recruiterId], references: [id])
-  lastMessagedAt DateTime
-  chat Chat[]
+  lastMessagedAt DateTime @default(now())
+  messages Message[]
   @@unique([recruiterId, candidateId])
   @@map("conversations")
 }
 
-model Chat{
+model Message{
   id Int @id @default(autoincrement())
   conversationId Int
   conversation Conversation @relation(fields: [conversationId],references: [id])
