@@ -12,6 +12,7 @@ import {createServer} from 'http'
 import {Server} from 'socket.io'
 import {verifyToken} from './utils/jwt'
 import {parseCookie} from 'cookie'
+import {prisma} from './lib/prisma'
 
 dotenv.config()
 const app=express()
@@ -41,7 +42,21 @@ io.use((socket,next)=>{
     socket.data.id=payload.id
     next()
 })
-io.on("connection",(socket)=>{console.log("A client connected!")})
+io.on("connection",async (socket)=>{
+    console.log("A client connected!")
+    const id=socket.data.id
+    const role=socket.data.role
+    const conversations=await prisma.conversation.findMany({
+        where:{
+            recruiterId:role==='recruiter'?id:undefined,
+            candidateId:role==='candidate'?id:undefined
+        },
+        select:{
+            id:true
+        }
+    })
+    socket.join(conversations.map(convo=>`conversation:${convo.id}`))
+})
 
 app.use(express.json())
 app.use(cors({
