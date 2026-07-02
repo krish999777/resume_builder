@@ -13,7 +13,10 @@ export function verifyToken(token:string){
     }
     try{
         const payload=jwt.verify(token,JWT_SECRET)
-        return payload
+        return payload as {
+            role:'candidate'|'recruiter',
+            id:number
+        }
     }catch(err){
         return null
     }

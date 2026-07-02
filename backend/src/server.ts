@@ -8,9 +8,41 @@ import resumeRouter from './routers/resumeRouter'
 import profileRouter from './routers/profileRouter'
 import errorHandleMiddleware from './middlewares/errorHandler'
 import conversationRouter from './routers/conversationRouter'
+import {createServer} from 'http'
+import {Server} from 'socket.io'
+import {verifyToken} from './utils/jwt'
+import {parseCookie} from 'cookie'
 
 dotenv.config()
 const app=express()
+
+const server=createServer(app)
+const io=new Server(server,{
+    cors:{
+        origin:process.env.FRONTEND_URL||'resume-builder-eight-lilac.vercel.app',
+        credentials:true
+    },
+})
+io.use((socket,next)=>{
+    const rawCookie=socket.handshake.headers.cookie
+    if(!rawCookie){
+        return next(new Error('Cookie not sent'))
+    }
+    const cookie=parseCookie(rawCookie)
+    const token=cookie.token
+    if(!token){
+        return next(new Error('Cookie does not contain token'))
+    }
+    const payload=verifyToken(token)
+    if(!payload){
+        return next(new Error('Not valid'))
+    }
+    socket.data.role=payload.role
+    socket.data.id=payload.id
+    next()
+})
+io.on("connection",(socket)=>{console.log("A client connected!")})
+
 app.use(express.json())
 app.use(cors({
     origin:process.env.FRONTEND_URL||'http://localhost:5173',
@@ -37,4 +69,4 @@ app.use('/conversation',conversationRouter)
 app.use(errorHandleMiddleware)
 
 const PORT=process.env.PORT||8000
-app.listen(PORT,()=>console.log(`App listening on port ${PORT}`))
+server.listen(PORT,()=>console.log(`App listening on port ${PORT}`))
