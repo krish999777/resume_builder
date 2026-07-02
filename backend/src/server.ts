@@ -9,10 +9,8 @@ import profileRouter from './routers/profileRouter'
 import errorHandleMiddleware from './middlewares/errorHandler'
 import conversationRouter from './routers/conversationRouter'
 import {createServer} from 'http'
+import { initSocket } from './types/socket'
 import {Server} from 'socket.io'
-import {verifyToken} from './utils/jwt'
-import {parseCookie} from 'cookie'
-import {prisma} from './lib/prisma'
 
 dotenv.config()
 const app=express()
@@ -24,39 +22,7 @@ const io=new Server(server,{
         credentials:true
     },
 })
-io.use((socket,next)=>{
-    const rawCookie=socket.handshake.headers.cookie
-    if(!rawCookie){
-        return next(new Error('Cookie not sent'))
-    }
-    const cookie=parseCookie(rawCookie)
-    const token=cookie.token
-    if(!token){
-        return next(new Error('Cookie does not contain token'))
-    }
-    const payload=verifyToken(token)
-    if(!payload){
-        return next(new Error('Not valid'))
-    }
-    socket.data.role=payload.role
-    socket.data.id=payload.id
-    next()
-})
-io.on("connection",async (socket)=>{
-    console.log("A client connected!")
-    const id=socket.data.id
-    const role=socket.data.role
-    const conversations=await prisma.conversation.findMany({
-        where:{
-            recruiterId:role==='recruiter'?id:undefined,
-            candidateId:role==='candidate'?id:undefined
-        },
-        select:{
-            id:true
-        }
-    })
-    socket.join(conversations.map(convo=>`conversation:${convo.id}`))
-})
+initSocket(io)
 
 app.use(express.json())
 app.use(cors({
