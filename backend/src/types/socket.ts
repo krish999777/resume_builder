@@ -41,5 +41,44 @@ export function initSocket(io:Server){
             console.log(err)
             socket.disconnect()
         }
+        socket.on('sendMessage',async (data:{
+            conversationId:number,
+            message:string
+        })=>{
+            if(!data||!data.conversationId||!data.message){
+                return socket.emit('error', { message: 'Unauthorized' })
+            }
+            try{
+                const date=new Date()
+                const response=await prisma.$transaction(async (tx)=>{
+                    const convo=await tx.conversation.findFirst({
+                        where:{id:data.conversationId,OR:[{candidateId:socket.data.id},{recruiterId:socket.data.id}]},
+                        select:{}//can i leave this empty because i dont really need anything from this
+                    })
+                    if(!convo){//i am not sure if this returns null or empty object, if empty object then this will be wrong
+                        throw new Error('resopnse')
+                    }
+                    await tx.conversation.update({
+                        where:{id:data.conversationId},
+                        data:{
+                            lastMessagedAt:date,
+                            messages:{
+                                create:{
+                                    message:data.message,
+                                    senderId:socket.data.id,
+                                    sentAt:date,
+                                }
+                            }
+                        }
+                    })
+                })
+                io.to(`conversation:${data.conversationId}`).emit('recieveMessage',{
+                    message:data.message,
+                    senderId:socket.data.id
+                })
+            }catch(err){
+                return socket.emit('error', { message: 'Error in updating db or emitting message' })
+            }
+        })
     })
 }
