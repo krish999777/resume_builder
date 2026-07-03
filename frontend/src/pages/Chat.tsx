@@ -1,12 +1,12 @@
 import './Chat.css'
-import { getConversations } from '../utils/api'
+import {getConversations,getEachChat} from '../utils/api'
 import {useQuery} from '@tanstack/react-query'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ErrorMessage from '../components/ErrorMessage'
 import useMe from '../hooks/useMe'
 import {useState} from 'react'
 
-export default function Chat(){
+export default function Messages(){
     const [chat,setChat]=useState<null|number>(null)
 
     const query=useMe()
@@ -14,6 +14,11 @@ export default function Chat(){
     const {data,isPending,error}=useQuery({
         queryFn:getConversations,
         queryKey:['conversations']
+    })
+    const chatQuery=useQuery({
+        enabled:chat!==null,
+        queryFn:()=>getEachChat(chat!),
+        queryKey:['messages',chat!]
     })
 
     if(isPending){
@@ -41,7 +46,31 @@ export default function Chat(){
             <div>
                 {!chat?'Select a chat':(
                     <div>
-                        {chat}
+                        {chatQuery.isPending
+                        ?
+                        <LoadingSpinner/>
+                        :
+                        chatQuery.error||!chatQuery.data
+                        ?
+                        (<div><ErrorMessage message={chatQuery?.error?.message||'Unknown error'}/></div>)
+                        :
+                        chatQuery.data.data.length===0
+                        ?
+                        (<div>No messages found, start a conversation</div>)
+                        :
+                        (
+                        <div>
+                            {chatQuery.data.data.map((chat,index)=>(
+                                <div key={index} className={chat.senderId===query.data!.id?'Left':'Right'}>
+                                    <div><img src={chat.profileUrl} alt="pfp"/></div>
+                                    <div>{chat.name}</div>
+                                    <div>{chat.message}</div>
+                                    <div>{new Date(chat.sentAt).toDateString()}</div>
+                                </div>
+                            ))}
+                        </div>
+                        )
+                        }
                     </div>
                 )}
             </div>

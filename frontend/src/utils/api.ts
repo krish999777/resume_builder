@@ -209,3 +209,21 @@ export async function getConversations(){
         throw new Error(err.response?.data?.error||'Unknown error')
     }
 }
+
+export async function getEachChat(id:number){
+    try{
+        const res=await api.get(`/conversation/${id}/messages`)
+        return res.data as {
+            data: {
+                id:number,
+                message: string,
+                sentAt: Date,
+                name: string,
+                profileUrl: string,
+                senderId:number
+            }[]
+        }
+    }catch(err:any){
+        throw new Error(err.response?.data?.error||'Unknown error')
+    }
+}
