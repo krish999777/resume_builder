@@ -34,6 +34,7 @@ export default function Navbar({ userData }: {
                     : <NavLink to="/resumes" className={({ isActive }) => `navbar-link ${isActive ? 'navbar-link-active' : ''}`}>Browse Resumes</NavLink>
                 }
                 <NavLink to="/profile" className={({ isActive }) => `navbar-link ${isActive ? 'navbar-link-active' : ''}`}>Profile</NavLink>
+                <NavLink to="/chat" className={({ isActive }) => `navbar-link ${isActive ? 'navbar-link-active' : ''}`}>Chat</NavLink>
             </div>
             <div className="navbar-user">
                 <img src={userData.profileUrl} alt={userData.name} className="navbar-avatar" />

@@ -195,3 +195,17 @@ export async function getResumeById(id:number){
         throw new Error(err.response?.data?.error||'Unknown error')
     }
 }
+export async function getConversations(){
+    try{
+        const res=await api.get('/conversation')
+        return res.data as {
+            data:{
+                id:number,
+                name:string,
+                lastMessagedAt:Date
+            }[]
+        }
+    }catch(err:any){
+        throw new Error(err.response?.data?.error||'Unknown error')
+    }
+}
