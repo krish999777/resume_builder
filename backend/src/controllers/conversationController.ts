@@ -1,6 +1,7 @@
 import type {Request,Response} from 'express'
 import * as z from 'zod'
 import {prisma} from '../lib/prisma'
+import {io} from '../server'
 
 export async function postConversation(req:Request,res:Response){
     const {userId}=req.body
@@ -33,6 +34,11 @@ export async function postConversation(req:Request,res:Response){
             },
             update:{},
             select:{id:true}
+        })
+        io.sockets.sockets.forEach(socket=>{
+            if(socket.data.id===id||socket.data.id===result.data){
+                socket.join(`conversation:${conversation.id}`)
+            }
         })
         return res.status(200).json({conversationId:conversation.id})
     }catch(err){
