@@ -56,12 +56,13 @@ export async function getConversation(req:Request,res:Response){
                 where: { id },
                 select: {
                     conversationsAsCandidate: {
-                        select: { recruiter: { select: { name: true } }, lastMessagedAt: true }
+                        select: {id:true, recruiter: { select: { name: true } }, lastMessagedAt: true }
                     }
                 }
             })
             if (!user) return res.status(400).json({error: "User not found"})
             const data = user.conversationsAsCandidate.map(conv => ({
+                id:conv.id,
                 name: conv.recruiter.name,
                 lastMessagedAt: conv.lastMessagedAt
             }))
@@ -72,12 +73,13 @@ export async function getConversation(req:Request,res:Response){
             where: { id },
             select: {
                 conversationsAsRecruiter: {
-                    select: { candidate: { select: { name: true } }, lastMessagedAt: true }
+                    select: { id:true,candidate: { select: { name: true } }, lastMessagedAt: true }
                 }
             }
         })
         if (!user) return res.status(400).json({error: "User not found"})
         const data = user.conversationsAsRecruiter.map(conv => ({
+            id:conv.id,
             name: conv.candidate.name,
             lastMessagedAt: conv.lastMessagedAt
         }))
@@ -102,10 +104,12 @@ export async function getEachConversation(req:Request,res:Response){
             select:{
                 messages:{
                     select:{
+                        id:true,
                         message:true,
                         sentAt:true,
                         sender:{
                             select:{
+                                id:true,
                                 name:true,
                                 profileUrl:true
                             }
@@ -119,6 +123,8 @@ export async function getEachConversation(req:Request,res:Response){
             return res.status(404).json({error:"Conversation not found"})
         }
         const flattenedMessages=messages.messages.map(mes=>({
+            id:mes.id,
+            senderId:mes.sender.id,
             message:mes.message,
             sentAt:mes.sentAt,
             name:mes.sender.name,
