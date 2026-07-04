@@ -13,7 +13,9 @@ export function SocketProvider({children}:{children:ReactNode}){
     const {data:user}=useMe()
     useEffect(()=>{
         if(user){
-            const newSocket = io(import.meta.env.VITE_BACKEND_URL)
+            const newSocket = io(import.meta.env.VITE_BACKEND_URL,{
+                withCredentials:true
+            })
             setSocket(newSocket)
             return () => {newSocket.disconnect()}
         }else{

@@ -1,13 +1,29 @@
 import './Chat.css'
 import {getConversations,getEachChat} from '../utils/api'
-import {useQuery} from '@tanstack/react-query'
+import {useQuery,useMutation,useQueryClient} from '@tanstack/react-query'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ErrorMessage from '../components/ErrorMessage'
 import useMe from '../hooks/useMe'
-import {useState} from 'react'
+import {useState,useEffect} from 'react'
+import {toast} from 'react-hot-toast'
+import type {SubmitEvent} from 'react'
+import useSocket from "../hooks/useSocket"
 
 export default function Messages(){
     const [chat,setChat]=useState<null|number>(null)
+    
+    const queryClient=useQueryClient()
+    
+    const socket=useSocket()
+    useEffect(()=>{
+        if(!socket){
+            return
+        }
+        socket.on('recieveMessage',data=>{
+            console.log('recieved')
+            queryClient.invalidateQueries({queryKey:['messages',data.conversationId]})
+        })
+    },[socket])
 
     const query=useMe()
 
@@ -20,6 +36,31 @@ export default function Messages(){
         queryFn:()=>getEachChat(chat!),
         queryKey:['messages',chat!]
     })
+
+    const chatMutation=useMutation({
+        mutationFn:async ({message,conversationId}:{message:string,conversationId:number})=>{
+            if(!socket){
+                throw new Error('Error connecting socket')
+            }
+            socket.emit('sendMessage',{
+                conversationId,
+                message
+            })
+        },
+        onError:(err)=>toast.error(err.message)
+    })
+
+    function handleSubmit(e:SubmitEvent){
+        e.preventDefault()
+        const form=e.target
+        const formData=new FormData(form)
+        const message=String(formData.get('message'))
+        if(!message||!message.trim()){
+            return
+        }
+        chatMutation.mutate({message,conversationId:chat!})
+        form.reset()
+    }
 
     if(isPending){
         return <LoadingSpinner/>
@@ -54,20 +95,22 @@ export default function Messages(){
                         ?
                         (<div><ErrorMessage message={chatQuery?.error?.message||'Unknown error'}/></div>)
                         :
-                        chatQuery.data.data.length===0
-                        ?
-                        (<div>No messages found, start a conversation</div>)
-                        :
                         (
                         <div>
-                            {chatQuery.data.data.map((chat,index)=>(
-                                <div key={index} className={chat.senderId===query.data!.id?'Left':'Right'}>
+                            {chatQuery.data.data.length===0?'No messages found, start a conversation':chatQuery.data.data.map((chat,index)=>(
+                                <div key={index} className={chat.senderId===query.data!.id?'right':'left'}>
                                     <div><img src={chat.profileUrl} alt="pfp"/></div>
                                     <div>{chat.name}</div>
                                     <div>{chat.message}</div>
                                     <div>{new Date(chat.sentAt).toDateString()}</div>
                                 </div>
                             ))}
+                            <div>
+                                <form onSubmit={handleSubmit}>
+                                    <input name="message"/>
+                                    <button>Send</button>
+                                </form>
+                            </div>
                         </div>
                         )
                         }
