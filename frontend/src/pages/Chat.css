@@ -242,3 +242,19 @@
         display: flex;
     }
 }
+.chat-back-btn {
+    display: none;
+}
+
+@media (max-width: 640px) {
+    .chat-back-btn {
+        display: block;
+        padding: 0.5rem 1rem;
+        background: none;
+        border: none;
+        color: #2563eb;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
+}

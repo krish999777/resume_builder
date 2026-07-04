@@ -91,7 +91,7 @@ export default function Messages(){
     }
 
     return (
-        <div className="chat-layout">
+        <div className={`chat-layout ${chat ? 'chat-open' : ''}`}>
             <div className="chat-sidebar">
                 <div className="chat-sidebar-header">Messages</div>
                 {data.data.map(convo => (
@@ -114,6 +114,7 @@ export default function Messages(){
                     <div className="chat-error"><ErrorMessage message={chatQuery?.error?.message || 'Unknown error'} /></div>
                 ) : (
                     <div className="chat-window">
+                        <button className="chat-back-btn" onClick={() => setChat(null)}>← Back</button>
                         <div className="chat-messages">
                             {chatQuery.data.data.length === 0
                                 ? <div className="chat-no-messages">No messages yet — say something!</div>
