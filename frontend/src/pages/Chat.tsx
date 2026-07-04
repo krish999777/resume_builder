@@ -19,10 +19,19 @@ export default function Messages(){
         if(!socket){
             return
         }
-        socket.on('recieveMessage',data=>{
-            console.log('recieved')
+        function recieveMessage(data:any){
             queryClient.invalidateQueries({queryKey:['messages',data.conversationId]})
-        })
+            queryClient.invalidateQueries({queryKey:['conversations']})
+        }
+        function handleError(err:any){
+            toast.error(err.message)
+        }
+        socket.on('recieveMessage',recieveMessage)
+        socket.on('error',handleError)
+        return ()=>{
+            socket.off('recieveMessage',recieveMessage)
+            socket.off('error',handleError)
+        }
     },[socket])
 
     const query=useMe()
