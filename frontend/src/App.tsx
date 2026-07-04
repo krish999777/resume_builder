@@ -10,6 +10,7 @@ import ExportResume from './pages/ExportResume'
 import Profile from './pages/Profile'
 import Resumes from './pages/Resumes'
 import EachResume from './pages/EachResume'
+import Messages from './pages/Chat'
 
 export default function App(){
   return(
@@ -51,6 +52,11 @@ export default function App(){
         <Route path='/resumes/:userId' element={
           <ProtectedRoute role='recruiter'>
             <EachResume/>
+          </ProtectedRoute>
+        }/>
+        <Route path='/messages' element={
+          <ProtectedRoute>
+            <Messages/>
           </ProtectedRoute>
         }/>
         <Route path='*' element={<Navigate to='/'/>}/>

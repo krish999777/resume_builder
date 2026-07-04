@@ -1,7 +1,7 @@
 import './ResumeView.css'
 import {useQuery,useMutation,useQueryClient} from '@tanstack/react-query'
 import {useNavigate} from 'react-router-dom'
-import {getResume,deleteResume,getResumeById} from '../utils/api'
+import {getResume,deleteResume,getResumeById,postConversation} from '../utils/api'
 import LoadingSpinner from '../components/LoadingSpinner'
 import toast from 'react-hot-toast'
 import ErrorMessage from '../components/ErrorMessage'
@@ -27,6 +27,16 @@ export default function ResumeView({id}:{id?:number}){
         onError:()=>{
             toast.error('Unable to delete resume')
         }
+    })
+    const messageMutation=useMutation({
+        mutationFn:()=>postConversation(data!.data!.userId),
+        onSuccess:data=>{
+            queryClient.invalidateQueries({queryKey:['conversations']})
+            navigate('/messages',{
+                state:{conversationId:data.conversationId}
+            })
+        },
+        onError:(err)=>toast.error(err.message)
     })
     if(isPending){
         return <LoadingSpinner/>
@@ -56,15 +66,23 @@ export default function ResumeView({id}:{id?:number}){
                     <span className={`resume-visibility ${data.data.visibility?'resume-visibility-public':'resume-visibility-private'}`}>
                         {data.data.visibility?'Public':'Private'}
                     </span>
-                    {userData!.role==='candidate'?<div className="resume-header-buttons">
-                        <button className="resume-edit-btn" onClick={()=>navigate('/resume/edit')}>Edit Resume</button>
-                        <button className="resume-export-btn" onClick={()=>navigate('/resume/export')}>Export PDF</button>
-                        <button className="resume-delete-btn" onClick={()=>{
-                            if(confirm('Are you sure you want to delete resume?')){
-                                deleteMutation.mutate()
-                            }
-                        }}>Delete Resume</button>
-                    </div>:null}
+                    <div className="resume-header-buttons">
+                        {userData!.role==='candidate'?
+                            <>
+                                <button className="resume-edit-btn" onClick={()=>navigate('/resume/edit')}>Edit Resume</button>
+                                <button className="resume-export-btn" onClick={()=>navigate('/resume/export')}>Export PDF</button>
+                                <button className="resume-delete-btn" onClick={()=>{
+                                    if(confirm('Are you sure you want to delete resume?')){
+                                        deleteMutation.mutate()
+                                    }
+                                }}>Delete Resume</button>
+                            </>
+                            :
+                            <>
+                                <button className="resume-edit-btn" onClick={()=>messageMutation.mutate()}>Message</button>
+                            </>
+                        }
+                    </div>
                 </div>
             </div>
             <section className="resume-section">

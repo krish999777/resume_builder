@@ -195,3 +195,47 @@ export async function getResumeById(id:number){
         throw new Error(err.response?.data?.error||'Unknown error')
     }
 }
+export async function getConversations(){
+    try{
+        const res=await api.get('/conversation')
+        return res.data as {
+            data:{
+                id:number,
+                name:string,
+                lastMessagedAt:Date
+            }[]
+        }
+    }catch(err:any){
+        throw new Error(err.response?.data?.error||'Unknown error')
+    }
+}
+
+export async function getEachChat(id:number){
+    try{
+        const res=await api.get(`/conversation/${id}/messages`)
+        return res.data as {
+            data: {
+                id:number,
+                message: string,
+                sentAt: Date,
+                name: string,
+                profileUrl: string,
+                senderId:number
+            }[]
+        }
+    }catch(err:any){
+        throw new Error(err.response?.data?.error||'Unknown error')
+    }
+}
+
+export async function postConversation(id:number){
+    try{
+        const res=await api.post('/conversation',{
+            userId:id
+        })
+        return res.data
+    }catch(err:any){
+        throw new Error(err.response?.data?.error||'Unknown error')
+    }
+
+}
