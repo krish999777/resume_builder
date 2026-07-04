@@ -71,49 +71,54 @@ export default function Messages(){
     }
 
     if(data.data.length===0){
-        return <div>No conversations found. {query.data!.role==='candidate'?'You will see your conversations here when a recruiter messages you':'Message a candidate to start a conversation'}</div>//style this when i tell you to do the css
+        return (
+            <div className="chat-empty-conversations">
+                No conversations found. {query.data!.role === 'candidate' ? 'You will see your conversations here when a recruiter messages you' : 'Message a candidate to start a conversation'}
+            </div>
+        )
     }
 
-    return(
-        <div>
-            <div>
-                {data.data.map(convo=>(
-                    <div key={convo.id} onClick={()=>setChat(convo.id)}>
-                        <div>{convo.name}</div>
-                        <div>{new Date(convo.lastMessagedAt).toDateString()}</div>
+    return (
+        <div className="chat-layout">
+            <div className="chat-sidebar">
+                <div className="chat-sidebar-header">Messages</div>
+                {data.data.map(convo => (
+                    <div
+                        key={convo.id}
+                        onClick={() => setChat(convo.id)}
+                        className={`chat-sidebar-item ${chat === convo.id ? 'chat-sidebar-item-active' : ''}`}
+                    >
+                        <div className="chat-sidebar-name">{convo.name}</div>
+                        <div className="chat-sidebar-date">{new Date(convo.lastMessagedAt).toDateString()}</div>
                     </div>
                 ))}
             </div>
-            <div>
-                {!chat?'Select a chat':(
-                    <div>
-                        {chatQuery.isPending
-                        ?
-                        <LoadingSpinner/>
-                        :
-                        chatQuery.error||!chatQuery.data
-                        ?
-                        (<div><ErrorMessage message={chatQuery?.error?.message||'Unknown error'}/></div>)
-                        :
-                        (
-                        <div>
-                            {chatQuery.data.data.length===0?'No messages found, start a conversation':chatQuery.data.data.map((chat,index)=>(
-                                <div key={index} className={chat.senderId===query.data!.id?'right':'left'}>
-                                    <div><img src={chat.profileUrl} alt="pfp"/></div>
-                                    <div>{chat.name}</div>
-                                    <div>{chat.message}</div>
-                                    <div>{new Date(chat.sentAt).toDateString()}</div>
-                                </div>
-                            ))}
-                            <div>
-                                <form onSubmit={handleSubmit}>
-                                    <input name="message"/>
-                                    <button>Send</button>
-                                </form>
-                            </div>
+            <div className="chat-main">
+                {!chat ? (
+                    <div className="chat-empty-state">Select a conversation to start messaging</div>
+                ) : chatQuery.isPending ? (
+                    <div className="chat-loading"><LoadingSpinner /></div>
+                ) : chatQuery.error || !chatQuery.data ? (
+                    <div className="chat-error"><ErrorMessage message={chatQuery?.error?.message || 'Unknown error'} /></div>
+                ) : (
+                    <div className="chat-window">
+                        <div className="chat-messages">
+                            {chatQuery.data.data.length === 0
+                                ? <div className="chat-no-messages">No messages yet — say something!</div>
+                                : chatQuery.data.data.map((msg, index) => (
+                                    <div key={index} className={`chat-message-row ${msg.senderId === query.data!.id ? 'right' : 'left'}`}>
+                                        <img src={msg.profileUrl} alt="pfp" className="chat-avatar" />
+                                        <div className="chat-bubble-wrap">
+                                            <div className="chat-bubble">{msg.message}</div>
+                                        </div>
+                                    </div>
+                                ))
+                            }
                         </div>
-                        )
-                        }
+                        <form className="chat-input-bar" onSubmit={handleSubmit}>
+                            <input className="chat-input" name="message" placeholder="Type a message..." autoComplete="off" />
+                            <button className="chat-send-btn" type="submit">Send</button>
+                        </form>
                     </div>
                 )}
             </div>
