@@ -8,9 +8,12 @@ import {useState,useEffect} from 'react'
 import {toast} from 'react-hot-toast'
 import type {SubmitEvent} from 'react'
 import useSocket from "../hooks/useSocket"
+import { useLocation } from 'react-router-dom'
 
 export default function Messages(){
-    const [chat,setChat]=useState<null|number>(null)
+    const conversationId=useLocation().state?.conversationId||null
+
+    const [chat,setChat]=useState<null|number>(conversationId)
     
     const queryClient=useQueryClient()
     

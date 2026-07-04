@@ -227,3 +227,15 @@ export async function getEachChat(id:number){
         throw new Error(err.response?.data?.error||'Unknown error')
     }
 }
+
+export async function postConversation(id:number){
+    try{
+        const res=await api.post('/conversation',{
+            userId:id
+        })
+        return res.data
+    }catch(err:any){
+        throw new Error(err.response?.data?.error||'Unknown error')
+    }
+
+}
