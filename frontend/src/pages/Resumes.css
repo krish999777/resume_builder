@@ -145,3 +145,27 @@
     font-size: 0.875rem;
     color: #6b7280;
 }
+
+@media (max-width: 768px) {
+    .resumes-wrap {
+        padding: 1.5rem 1rem 3rem;
+        gap: 1.5rem;
+    }
+
+    .resumes-filters {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+
+    .resumes-search,
+    .resumes-sort {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .resumes-grid {
+        grid-template-columns: 1fr;
+    }
+}
