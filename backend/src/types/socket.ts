@@ -53,10 +53,10 @@ export function initSocket(io:Server){
                 const response=await prisma.$transaction(async (tx)=>{
                     const convo=await tx.conversation.findFirst({
                         where:{id:data.conversationId,OR:[{candidateId:socket.data.id},{recruiterId:socket.data.id}]},
-                        select:{}//can i leave this empty because i dont really need anything from this
+                        select:{id:true}
                     })
-                    if(!convo){//i am not sure if this returns null or empty object, if empty object then this will be wrong
-                        throw new Error('resopnse')
+                    if(!convo){
+                        throw new Error('Convesation not found or user not in conversation')
                     }
                     await tx.conversation.update({
                         where:{id:data.conversationId},
@@ -74,7 +74,8 @@ export function initSocket(io:Server){
                 })
                 io.to(`conversation:${data.conversationId}`).emit('recieveMessage',{
                     message:data.message,
-                    senderId:socket.data.id
+                    senderId:socket.data.id,
+                    conversationId:data.conversationId
                 })
             }catch(err){
                 return socket.emit('error', { message: 'Error in updating db or emitting message' })
