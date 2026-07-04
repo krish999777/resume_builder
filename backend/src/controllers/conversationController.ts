@@ -56,7 +56,8 @@ export async function getConversation(req:Request,res:Response){
                 where: { id },
                 select: {
                     conversationsAsCandidate: {
-                        select: {id:true, recruiter: { select: { name: true } }, lastMessagedAt: true }
+                        select: {id:true, recruiter: { select: { name: true } }, lastMessagedAt: true },
+                        orderBy:{lastMessagedAt:'desc'}
                     }
                 }
             })
@@ -73,7 +74,8 @@ export async function getConversation(req:Request,res:Response){
             where: { id },
             select: {
                 conversationsAsRecruiter: {
-                    select: { id:true,candidate: { select: { name: true } }, lastMessagedAt: true }
+                    select: { id:true,candidate: { select: { name: true } }, lastMessagedAt: true },
+                    orderBy:{lastMessagedAt:'desc'}
                 }
             }
         })
