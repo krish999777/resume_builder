@@ -375,3 +375,58 @@
     margin-left: 0.5rem;
     vertical-align: middle;
 }
+
+@media (max-width: 768px) {
+    .cr-wrap {
+        flex-direction: column;
+    }
+
+    .cr-sidebar {
+        width: 100%;
+        min-width: 0;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 0.75rem 1rem;
+        position: sticky;
+        top: 64px;
+        z-index: 10;
+        gap: 0;
+        background: #ffffff;
+    }
+
+    .cr-sidebar-title {
+        display: none;
+    }
+
+    .cr-nav {
+        flex-direction: row;
+        overflow-x: auto;
+        gap: 0.5rem;
+        width: 100%;
+        padding-bottom: 0.25rem;
+        scrollbar-width: none;
+    }
+
+    .cr-nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .cr-nav-btn {
+        width: auto;
+        white-space: nowrap;
+        padding: 0.45rem 0.75rem;
+        font-size: 0.8rem;
+    }
+
+    .cr-main {
+        padding: 1.5rem 1rem 3rem;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .cr-date-row {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+}

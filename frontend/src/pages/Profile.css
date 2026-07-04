@@ -141,3 +141,34 @@
     border-radius: 50%;
     animation: spin 0.7s linear infinite;
 }
+
+@media (max-width: 480px) {
+    .profile-wrap {
+        padding: 1.5rem 1rem;
+    }
+
+    .profile-card {
+        padding: 1.5rem;
+        gap: 1.25rem;
+    }
+
+    .profile-avatar-section {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .profile-actions {
+        width: 100%;
+    }
+
+    .profile-actions button {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .profile-submit-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

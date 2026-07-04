@@ -276,3 +276,60 @@
     display:flex;
     gap:15px;
 }
+
+@media (max-width: 768px) {
+    .resume-wrap {
+        padding: 1.5rem 1rem 3rem;
+        gap: 1.5rem;
+    }
+
+    .resume-header {
+        position: relative;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1.25rem;
+        padding-bottom: 1.25rem;
+    }
+
+    .resume-header-left {
+        padding-right: 5rem;
+    }
+
+    .resume-visibility {
+        position: absolute;
+        top: 0.25rem;
+        right: 0;
+    }
+
+    .resume-header-right {
+        align-items: stretch;
+        width: 100%;
+    }
+
+    .resume-header-buttons {
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        width: 100%;
+    }
+
+    .resume-header-buttons button {
+        flex: 1 1 auto;
+        min-width: 70px;
+        padding: 0.45rem 0.5rem;
+        font-size: 0.8rem;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .resume-card-header {
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .resume-card-date {
+        font-size: 0.75rem;
+        white-space: normal;
+    }
+}
