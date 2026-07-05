@@ -4,7 +4,7 @@ import {useQuery,useMutation,useQueryClient} from '@tanstack/react-query'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ErrorMessage from '../components/ErrorMessage'
 import useMe from '../hooks/useMe'
-import {useState,useEffect} from 'react'
+import {useState,useEffect,useRef} from 'react'
 import {toast} from 'react-hot-toast'
 import type {SubmitEvent} from 'react'
 import useSocket from "../hooks/useSocket"
@@ -14,6 +14,10 @@ export default function Messages(){
     const conversationId=useLocation().state?.conversationId||null
 
     const [chat,setChat]=useState<null|number>(conversationId)
+    const [isTyping,setIsTyping]=useState<boolean>(false)
+    const [typingTrigger,setTypingTrigger]=useState<number>(0)
+
+    const messages=useRef<any>(null)
     
     const queryClient=useQueryClient()
     
@@ -23,19 +27,33 @@ export default function Messages(){
             return
         }
         function recieveMessage(data:any){
+            setIsTyping(false)
             queryClient.invalidateQueries({queryKey:['messages',data.conversationId]})
             queryClient.invalidateQueries({queryKey:['conversations']})
         }
         function handleError(err:any){
             toast.error(err.message)
         }
+        function handleTypingSocket({conversationId}:{conversationId:number}){
+            if(conversationId===chat){
+                setIsTyping(true)
+                setTypingTrigger(prev=>prev+1)
+            }
+        }
         socket.on('recieveMessage',recieveMessage)
         socket.on('error',handleError)
+        socket.on('typingReciever',handleTypingSocket)
         return ()=>{
             socket.off('recieveMessage',recieveMessage)
             socket.off('error',handleError)
+            socket.off('typingReciever',handleTypingSocket)
         }
-    },[socket])
+    },[socket,chat])
+
+    useEffect(()=>{
+        const timeout=setTimeout(()=>setIsTyping(false),3000)
+        return ()=>clearTimeout(timeout)
+    },[typingTrigger])
 
     const query=useMe()
 
@@ -49,6 +67,12 @@ export default function Messages(){
         queryKey:['messages',chat!]
     })
 
+    useEffect(()=>{
+        if(messages.current){
+            messages.current.scrollTop = messages.current.scrollHeight
+        }
+    },[chatQuery.data])
+    
     const chatMutation=useMutation({
         mutationFn:async ({message,conversationId}:{message:string,conversationId:number})=>{
             if(!socket){
@@ -72,6 +96,15 @@ export default function Messages(){
         }
         chatMutation.mutate({message,conversationId:chat!})
         form.reset()
+    }
+
+    function handleTyping(){
+        if(!socket){
+            return
+        }
+        socket.emit('typingSender',{
+            conversationId:chat
+        })
     }
 
     if(isPending){
@@ -115,7 +148,7 @@ export default function Messages(){
                 ) : (
                     <div className="chat-window">
                         <button className="chat-back-btn" onClick={() => setChat(null)}>← Back</button>
-                        <div className="chat-messages">
+                        <div className="chat-messages" ref={messages}>
                             {chatQuery.data.data.length === 0
                                 ? <div className="chat-no-messages">No messages yet — say something!</div>
                                 : chatQuery.data.data.map((msg, index) => (
@@ -127,9 +160,18 @@ export default function Messages(){
                                     </div>
                                 ))
                             }
+                            {isTyping && (
+                                <div className="chat-message-row left">
+                                    <div className="chat-typing-indicator">
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                         <form className="chat-input-bar" onSubmit={handleSubmit}>
-                            <input className="chat-input" name="message" placeholder="Type a message..." autoComplete="off" />
+                            <input className="chat-input" onChange={handleTyping} name="message" placeholder="Type a message..." autoComplete="off" />
                             <button className="chat-send-btn" type="submit">Send</button>
                         </form>
                     </div>
