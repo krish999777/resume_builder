@@ -4,7 +4,7 @@ import {useQuery,useMutation,useQueryClient} from '@tanstack/react-query'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ErrorMessage from '../components/ErrorMessage'
 import useMe from '../hooks/useMe'
-import {useState,useEffect} from 'react'
+import {useState,useEffect,useRef} from 'react'
 import {toast} from 'react-hot-toast'
 import type {SubmitEvent} from 'react'
 import useSocket from "../hooks/useSocket"
@@ -16,6 +16,8 @@ export default function Messages(){
     const [chat,setChat]=useState<null|number>(conversationId)
     const [isTyping,setIsTyping]=useState<boolean>(false)
     const [typingTrigger,setTypingTrigger]=useState<number>(0)
+
+    const messages=useRef<any>(null)
     
     const queryClient=useQueryClient()
     
@@ -65,6 +67,12 @@ export default function Messages(){
         queryKey:['messages',chat!]
     })
 
+    useEffect(()=>{
+        if(messages.current){
+            messages.current.scrollTop = messages.current.scrollHeight
+        }
+    },[chatQuery.data])
+    
     const chatMutation=useMutation({
         mutationFn:async ({message,conversationId}:{message:string,conversationId:number})=>{
             if(!socket){
@@ -140,7 +148,7 @@ export default function Messages(){
                 ) : (
                     <div className="chat-window">
                         <button className="chat-back-btn" onClick={() => setChat(null)}>← Back</button>
-                        <div className="chat-messages">
+                        <div className="chat-messages" ref={messages}>
                             {chatQuery.data.data.length === 0
                                 ? <div className="chat-no-messages">No messages yet — say something!</div>
                                 : chatQuery.data.data.map((msg, index) => (
