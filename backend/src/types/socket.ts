@@ -81,5 +81,13 @@ export function initSocket(io:Server){
                 return socket.emit('error', { message: 'Error in updating db or emitting message' })
             }
         })
+        socket.on('typingSender',async ({conversationId}:{conversationId:number})=>{
+            const isConversation=socket.rooms.has(`conversation:${conversationId}`)
+            if(!isConversation){
+                socket.emit('error',{message:"User is not part of the conversation"})
+                return
+            }
+            socket.to(`conversation:${conversationId}`).emit('typingReciever',{conversationId})
+        })
     })
 }
