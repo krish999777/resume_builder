@@ -1,6 +1,6 @@
 # ResumeHub
 
-A full-stack resume builder web app where candidates can create, edit, and export their resume as a PDF, and recruiters can browse and search candidate resumes.
+A full-stack resume builder with real-time recruiter-to-candidate chat. Candidates create and export resumes. Recruiters browse, search, and message candidates directly.
 
 ## Live Demo
 
@@ -25,6 +25,10 @@ A full-stack resume builder web app where candidates can create, edit, and expor
 ### Profile
 <img width="1470" height="801" alt="image" src="https://github.com/user-attachments/assets/67eeefba-6e14-4599-a704-90293eb4d152" />
 
+### Message
+<img width="1470" height="801" alt="image" src="https://github.com/user-attachments/assets/89b67439-955c-4233-8a52-69a48344e904" />
+<img width="1470" height="799" alt="image" src="https://github.com/user-attachments/assets/670f5f0f-5c84-42ab-a930-10243a203e46" />
+
 ## Features
 
 **Candidates**
@@ -38,6 +42,7 @@ A full-stack resume builder web app where candidates can create, edit, and expor
 - Search by candidate name, resume title, or skill
 - Sort by most skills or latest
 - View individual candidate resumes
+- Message candidates with real-time chat and typing indicators
 - Upload and delete profile photo
 
 **Auth**
@@ -51,6 +56,7 @@ A full-stack resume builder web app where candidates can create, edit, and expor
 - React + TypeScript
 - TanStack Query
 - React Hook Form + Zod
+- Socket.io
 - React Router
 - Axios
 - @react-pdf/renderer
@@ -60,6 +66,7 @@ A full-stack resume builder web app where candidates can create, edit, and expor
 - Express + TypeScript
 - PostgreSQL + Prisma ORM
 - JWT
+- Socket.io
 - Bcrypt
 - Multer + Cloudinary
 - Zod
