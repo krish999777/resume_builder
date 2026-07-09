@@ -26,8 +26,7 @@ A full-stack resume builder with real-time recruiter-to-candidate chat. Candidat
 <img width="1470" height="801" alt="image" src="https://github.com/user-attachments/assets/67eeefba-6e14-4599-a704-90293eb4d152" />
 
 ### Message
-<img width="1470" height="801" alt="image" src="https://github.com/user-attachments/assets/89b67439-955c-4233-8a52-69a48344e904" />
-<img width="1470" height="799" alt="image" src="https://github.com/user-attachments/assets/670f5f0f-5c84-42ab-a930-10243a203e46" />
+https://github.com/user-attachments/assets/339ed988-b0c3-4bf3-b499-4c0237f5aa5e
 
 ## Features
 
