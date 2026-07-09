@@ -55,4 +55,9 @@ jobs:
                 tags: |
                     ${{ vars.DOCKER_USERNAME }}/resumehubbackend:latest
                     ${{ vars.DOCKER_USERNAME }}/resumehubbackend:${{ github.sha }}
-
+    render-deploy-hook:
+        needs: containerize-and-push 
+        runs-on: ubuntu-latest
+        steps:
+            - name: Trigger Render deploy
+              run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
