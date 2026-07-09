@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import * as z from "zod";
-import { prisma } from "../lib/prisma";
-import { getToken } from "../utils/jwt";
+import { prisma } from "../lib/prisma.js";
+import { getToken } from "../utils/jwt.js";
 import bcrypt from "bcrypt";
 
 const SignupSchema = z.object({

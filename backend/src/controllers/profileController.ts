@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { prisma } from "../lib/prisma";
+import { prisma } from "../lib/prisma.js";
 import { v2 as cloudinary } from "cloudinary";
 
 export async function putProfileController(req: Request, res: Response) {

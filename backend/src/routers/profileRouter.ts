@@ -4,8 +4,8 @@ import type { Request } from "express";
 import {
   putProfileController,
   deleteProfileController,
-} from "../controllers/profileController";
-import { isAuthenticated } from "../middlewares/isAuthenticated";
+} from "../controllers/profileController.js";
+import { isAuthenticated } from "../middlewares/isAuthenticated.js";
 
 const router = express.Router();
 

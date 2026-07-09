@@ -4,7 +4,8 @@
   "description": "",
   "main": "dist/server.js",
   "scripts": {
-    "start": "tsx src/server.ts",
+    "build": "tsc",
+    "start":"node dist/src/server.js",
     "dev": "nodemon --watch src --ext ts,json --exec tsx src/server.ts",
     "format": "npx prettier . --write",
     "format:check": "npx prettier . --check",

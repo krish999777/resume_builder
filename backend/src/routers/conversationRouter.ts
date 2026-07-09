@@ -3,9 +3,9 @@ import {
   postConversation,
   getConversation,
   getEachConversation,
-} from "../controllers/conversationController";
-import { isAuthenticated } from "../middlewares/isAuthenticated";
-import { isRecruiter } from "../middlewares/isRole";
+} from "../controllers/conversationController.js";
+import { isAuthenticated } from "../middlewares/isAuthenticated.js";
+import { isRecruiter } from "../middlewares/isRole.js";
 
 const router = express.Router();
 
