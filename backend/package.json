@@ -5,7 +5,11 @@
   "main": "dist/server.js",
   "scripts": {
     "start": "tsx src/server.ts",
-    "dev": "nodemon --watch src --ext ts,json --exec tsx src/server.ts"
+    "dev": "nodemon --watch src --ext ts,json --exec tsx src/server.ts",
+    "format": "npx prettier . --write",
+    "format:check": "npx prettier . --check",
+    "lint": "npx eslint .",
+    "lint:fix": "npx eslint . --fix"
   },
   "keywords": [],
   "author": "",
@@ -29,6 +33,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/bcrypt": "^6.0.0",
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
@@ -37,9 +42,15 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.1.0",
     "@types/pg": "^8.20.0",
+    "eslint": "^10.6.0",
+    "globals": "^17.7.0",
+    "install": "0.13.0",
     "nodemon": "^3.1.14",
+    "npm": "11.18.0",
+    "prettier": "3.9.4",
     "prisma": "^7.8.0",
     "tsx": "^4.22.4",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.63.0"
   }
 }
