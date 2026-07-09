@@ -1,6 +1,6 @@
-import { verifyToken } from "./jwt";
+import { verifyToken } from "./jwt.js";
 import { parseCookie } from "cookie";
-import { prisma } from "../lib/prisma";
+import { prisma } from "../lib/prisma.js";
 import type { Server } from "socket.io";
 
 export function initSocket(io: Server) {

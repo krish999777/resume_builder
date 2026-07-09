@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { prisma } from "../lib/prisma";
+import { prisma } from "../lib/prisma.js";
 import * as z from "zod";
 
 const AchievementSchema = z.object({
@@ -232,12 +232,10 @@ export async function getResumeController(
         },
       });
       if (!resume) {
-        return res
-          .status(200)
-          .json({
-            error: "Resume not found, please create a resume first",
-            data: null,
-          });
+        return res.status(200).json({
+          error: "Resume not found, please create a resume first",
+          data: null,
+        });
       }
       return res.status(200).json({
         message: "Resume found",

@@ -5,9 +5,9 @@ import {
   getEachResumeController,
   putResumeController,
   deleteResume,
-} from "../controllers/resumeController";
-import { isCandidate, isRecruiter } from "../middlewares/isRole";
-import { isAuthenticated } from "../middlewares/isAuthenticated";
+} from "../controllers/resumeController.js";
+import { isCandidate, isRecruiter } from "../middlewares/isRole.js";
+import { isAuthenticated } from "../middlewares/isAuthenticated.js";
 
 const router = express.Router();
 

@@ -3,13 +3,13 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import authRouter from "./routers/authRouter";
-import resumeRouter from "./routers/resumeRouter";
-import profileRouter from "./routers/profileRouter";
-import errorHandleMiddleware from "./middlewares/errorHandler";
-import conversationRouter from "./routers/conversationRouter";
+import authRouter from "./routers/authRouter.js";
+import resumeRouter from "./routers/resumeRouter.js";
+import profileRouter from "./routers/profileRouter.js";
+import errorHandleMiddleware from "./middlewares/errorHandler.js";
+import conversationRouter from "./routers/conversationRouter.js";
 import { createServer } from "http";
-import { initSocket } from "./utils/socket";
+import { initSocket } from "./utils/socket.js";
 import { Server } from "socket.io";
 
 dotenv.config();
@@ -55,5 +55,7 @@ app.use("/conversation", conversationRouter);
 
 app.use(errorHandleMiddleware);
 
-const PORT = process.env.PORT || 8000;
-server.listen(PORT, () => console.log(`App listening on port ${PORT}`));
+const PORT = Number(process.env.PORT) || 8000;
+server.listen(PORT, "0.0.0.0", () =>
+  console.log(`App listening on port ${PORT}`),
+);

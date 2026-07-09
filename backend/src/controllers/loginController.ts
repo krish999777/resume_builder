@@ -1,8 +1,8 @@
 import type { Request, Response } from "express";
 import * as z from "zod";
-import { prisma } from "../lib/prisma";
+import { prisma } from "../lib/prisma.js";
 import bcrypt from "bcrypt";
-import { getToken } from "../utils/jwt";
+import { getToken } from "../utils/jwt.js";
 
 const LoginSchema = z.object({
   email: z.email({

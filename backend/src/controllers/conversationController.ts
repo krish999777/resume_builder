@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import * as z from "zod";
-import { prisma } from "../lib/prisma";
-import { io } from "../server";
+import { prisma } from "../lib/prisma.js";
+import { io } from "../server.js";
 
 export async function postConversation(req: Request, res: Response) {
   const { userId } = req.body;
