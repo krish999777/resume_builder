@@ -56,4 +56,6 @@ app.use("/conversation", conversationRouter);
 app.use(errorHandleMiddleware);
 
 const PORT = Number(process.env.PORT) || 8000;
-server.listen(PORT,'0.0.0.0', () => console.log(`App listening on port ${PORT}`));
+server.listen(PORT, "0.0.0.0", () =>
+  console.log(`App listening on port ${PORT}`),
+);

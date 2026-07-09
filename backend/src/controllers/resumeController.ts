@@ -232,12 +232,10 @@ export async function getResumeController(
         },
       });
       if (!resume) {
-        return res
-          .status(200)
-          .json({
-            error: "Resume not found, please create a resume first",
-            data: null,
-          });
+        return res.status(200).json({
+          error: "Resume not found, please create a resume first",
+          data: null,
+        });
       }
       return res.status(200).json({
         message: "Resume found",
