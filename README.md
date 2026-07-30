@@ -4,7 +4,7 @@ A full-stack resume builder with real-time recruiter-to-candidate chat. Candidat
 
 ## Live Demo
 
-[ResumeHub](https://resume-builder-eight-lilac.vercel.app/)
+[ResumeHub](https://resume-builder-1-u1k1.onrender.com/)
 
 ## Screenshots
 
