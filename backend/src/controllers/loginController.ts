@@ -44,7 +44,7 @@ export async function loginController(req: Request, res: Response) {
     res.cookie("token", token, {
       secure: true,
       httpOnly: true,
-      sameSite: "strict",
+      sameSite: "none",
       partitioned: true,
     });
     return res
@@ -59,7 +59,7 @@ export async function logoutController(req: Request, res: Response) {
   res.clearCookie("token", {
     secure: true,
     httpOnly: true,
-    sameSite: "strict",
+    sameSite: "none",
     partitioned: true,
   });
   return res.status(200).json({ message: "Logout successful" });

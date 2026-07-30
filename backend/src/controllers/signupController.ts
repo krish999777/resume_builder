@@ -46,7 +46,7 @@ export async function signupController(req: Request, res: Response) {
     res.cookie("token", token, {
       httpOnly: true,
       secure: true,
-      sameSite: "strict",
+      sameSite: "none",
       partitioned: true,
     });
 
