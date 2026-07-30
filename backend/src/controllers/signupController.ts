@@ -46,7 +46,7 @@ export async function signupController(req: Request, res: Response) {
     res.cookie("token", token, {
       httpOnly: true,
       secure: true,
-      sameSite: "none",
+      sameSite: "strict",
     });
 
     res.status(201).json({ message: "Signup successful", role: response.role });
