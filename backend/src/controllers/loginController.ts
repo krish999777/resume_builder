@@ -45,6 +45,7 @@ export async function loginController(req: Request, res: Response) {
       secure: true,
       httpOnly: true,
       sameSite: "strict",
+      partitioned:true
     });
     return res
       .status(200)
@@ -59,6 +60,7 @@ export async function logoutController(req: Request, res: Response) {
     secure: true,
     httpOnly: true,
     sameSite: "strict",
+    partitioned:true
   });
   return res.status(200).json({ message: "Logout successful" });
 }

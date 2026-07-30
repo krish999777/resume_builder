@@ -47,6 +47,7 @@ export async function signupController(req: Request, res: Response) {
       httpOnly: true,
       secure: true,
       sameSite: "strict",
+      partitioned:true
     });
 
     res.status(201).json({ message: "Signup successful", role: response.role });
