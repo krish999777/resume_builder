@@ -274,8 +274,16 @@ export async function getEachResumeController(req: Request, res: Response) {
         .status(404)
         .json({ error: "No resume found for user with this id" });
     }
-    const {user:{email,password,id,...cleanUser},...filteredResume}=resume
-    return res.status(200).json({ message: "Resume found", data: {...filteredResume,user:cleanUser} });
+    const {
+      user: { email: _email, password: _password, ...cleanUser },
+      ...filteredResume
+    } = resume;
+    return res
+      .status(200)
+      .json({
+        message: "Resume found",
+        data: { ...filteredResume, user: cleanUser },
+      });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ error: "Internal server error" });
